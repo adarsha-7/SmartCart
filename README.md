@@ -42,7 +42,7 @@
 
 ### Full Stack:
 
-#### - Next.js (framework + development server)
+#### - Vite (development server)
 
 ### Hosting:
 
