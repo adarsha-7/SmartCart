@@ -1,3 +1,14 @@
+import { Routes, Route } from 'react-router-dom'
+import Home from './components/Home'
+import Login from './components/Login'
+
 export default function App() {
-    return <h1 className="text-3xl text-slate-800">Hello, World!</h1>
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<Home />}></Route>
+                <Route path="/login" element={<Login />}></Route>
+            </Routes>
+        </>
+    )
 }
