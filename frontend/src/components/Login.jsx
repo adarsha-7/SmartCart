@@ -11,7 +11,7 @@ export default function Login() {
     const [loginType, setLoginType] = useState('signIn')
     const [userMessage, setUserMessage] = useState({
         message: '',
-        color: 'red-600',
+        color: '',
     })
 
     function login(formData) {
@@ -20,11 +20,14 @@ export default function Login() {
 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!emailRegex.test(email)) {
-            setUserMessage((prev) => {
-                return {
-                    ...prev,
-                    message: 'Please enter a valid email address.',
-                }
+            setUserMessage({
+                message: 'Please enter a valid email address.',
+                color: 'red-600',
+            })
+        } else if (password.length < 8) {
+            setUserMessage({
+                message: 'Password should be at least 8 characters long.',
+                color: 'red-600',
             })
         } else {
             const data = {
@@ -50,9 +53,16 @@ export default function Login() {
                 axios
                     .post(`${API_URL}/api/login/signin`, data)
                     .then((res) => {
-                        console.log(res.data)
+                        setUserMessage((prev) => {
+                            return { ...prev, message: res.data.msg }
+                        })
                     })
-                    .catch((error) => console.error(error))
+                    .catch((error) => {
+                        setUserMessage((prev) => {
+                            return { ...prev, message: 'Error occured!' }
+                        })
+                        console.error(error)
+                    })
             }
         }
     }
@@ -64,7 +74,7 @@ export default function Login() {
                     <img
                         src="/icons/logo.png"
                         alt="Logo"
-                        className="h-12 w-12"
+                        className="h-10 w-12"
                     />
                     <span className="text-2xl font-bold">SmartCart</span>
                 </div>
@@ -117,7 +127,7 @@ export default function Login() {
             <section className="flex h-full w-full items-center justify-center lg:w-1/2">
                 <form
                     action={login}
-                    className="flex max-w-md flex-col items-center justify-center lg:max-w-lg"
+                    className="flex flex-col items-center justify-center"
                 >
                     <h1 className="mb-2 text-center text-3xl font-bold">
                         Welcome to SmartCart
@@ -197,7 +207,7 @@ export default function Login() {
                         Continue with Google
                     </button>
                     <span
-                        className={`mt-5 text-center text-sm font-normal text-${userMessage.color}`}
+                        className={`mt-5 text-center text-sm font-normal text-red-600`}
                     >
                         {userMessage.message}
                     </span>

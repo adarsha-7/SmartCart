@@ -19,17 +19,12 @@ app.use(
     })
 );
 
-app.get("/", (req, res) => {
-    res.json("Hello, World!");
-});
+const login = require("./routes/login");
+app.use("/api/login", login);
 
-app.post("/api/login/signup", (req, res) => {
-    res.json({ msg: "Request received" });
-});
-
-const run = () => {
+const run = async () => {
     app.listen(PORT, () => {
-        console.log(`Server listening in http://localhost:${PORT}`);
+        console.log(`Server listening on http://localhost:${PORT}/api`);
     });
 };
 
