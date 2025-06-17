@@ -1,5 +1,6 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
 
 const { PrismaClient } = require("../generated/prisma");
 
@@ -25,10 +26,13 @@ router.post("/signup", async (req, res) => {
         res.json({ msg: "Email is already sent for verification." });
     } else {
         const { nanoid } = await import("nanoid");
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         const newPendingUser = await prisma.pendingUser.create({
             data: {
                 email: email,
-                passwordHash: password,
+                passwordHash: hashedPassword,
                 expiresAt: new Date(Date.now() + 2 * 60 * 1000),
                 verificationToken: nanoid(),
             },
@@ -82,9 +86,17 @@ router.post("/signin", async (req, res) => {
     });
 
     if (user) {
-        res.json({ msg: "Account exists. Sign in successfully." });
+        const passwordCorrect = await bcrypt.compare(
+            password,
+            user.passwordHash
+        );
+        if (passwordCorrect) {
+            res.json({ msg: "Account exists. Sign in successfully." });
+        } else {
+            res.json({ msg: "Incorrect password." });
+        }
     } else {
-        res.json({ msg: "Account does not exist." });
+        res.json({ msg: "Account does not exist. Please sign up first." });
     }
 });
 

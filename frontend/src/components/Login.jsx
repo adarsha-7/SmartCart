@@ -114,7 +114,7 @@ export default function Login() {
                     <div className="bg-background flex h-1/3 items-center gap-5 rounded-xl p-5 shadow-sm">
                         <Wallet className="h-7 w-7" />
                         <div className="flex flex-col">
-                            <h3 className="font-semibold">Easy purchase.</h3>
+                            <h3 className="font-semibold">Easy purchase</h3>
                             <span className="font-normal text-gray-500">
                                 Every step is simple and fun, from browsing your
                                 desired product to payment.
@@ -127,7 +127,7 @@ export default function Login() {
             <section className="flex h-full w-full items-center justify-center lg:w-1/2">
                 <form
                     action={login}
-                    className="flex flex-col items-center justify-center"
+                    className="flex w-[60%] flex-col items-center justify-center md:w-[50%] lg:w-[60%] xl:w-[50%]"
                 >
                     <h1 className="mb-2 text-center text-3xl font-bold">
                         Welcome to SmartCart
