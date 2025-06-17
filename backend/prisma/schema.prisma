@@ -19,8 +19,9 @@ model user {
   first_name   String?
   last_name    String?
   email        String   @unique
-  passwordHash String
+  passwordHash String?
   createdAt    DateTime @default(now())
+  provider     String[]
 }
 
 model pendingUser {

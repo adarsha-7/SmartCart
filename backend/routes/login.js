@@ -86,6 +86,12 @@ router.post("/signin", async (req, res) => {
     });
 
     if (user) {
+        if (!user.provider.includes("manual")) {
+            res.json({
+                msg: "This account uses Google for authentication. To use email and password, please sign up.",
+            });
+        }
+
         const passwordCorrect = await bcrypt.compare(
             password,
             user.passwordHash
@@ -114,6 +120,7 @@ router.post("/verify", async (req, res) => {
             data: {
                 email: pendingUser.email,
                 passwordHash: pendingUser.passwordHash,
+                provider: ["manual"],
             },
         });
         await prisma.pendingUser.delete({

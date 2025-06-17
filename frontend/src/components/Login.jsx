@@ -67,6 +67,10 @@ export default function Login() {
         }
     }
 
+    const handleGoogleLogin = () => {
+        window.location.href = `${API_URL}/api/auth/google`
+    }
+
     return (
         <main className="flex h-screen items-center">
             <section className="hidden h-full w-1/2 flex-col items-start justify-start bg-gray-200 px-12 py-8 lg:flex">
@@ -196,8 +200,9 @@ export default function Login() {
                         <div className="w-full flex-1/4 border-1 border-gray-300"></div>
                     </div>
                     <button
-                        type="submit"
+                        type="button"
                         className="mb-3 flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border-1 border-gray-300 font-medium transition-colors duration-300 hover:bg-gray-200"
+                        onClick={handleGoogleLogin}
                     >
                         <img
                             src="https://crystalpng.com/wp-content/uploads/2025/05/google-logo.png"

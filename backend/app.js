@@ -1,17 +1,18 @@
 const express = require("express");
 const cors = require("cors");
+const passport = require("passport");
 require("dotenv").config();
 
 const PORT = process.env.DEV_PORT;
-
-const app = express();
-app.use(express.json());
 
 const FRONTEND_URL =
     process.env.ENV == "development"
         ? process.env.FRONTEND_URL_DEV
         : process.env.FRONTEND_URL;
 
+const app = express();
+app.use(express.json());
+app.use(passport.initialize());
 app.use(
     cors({
         origin: FRONTEND_URL,
@@ -21,6 +22,9 @@ app.use(
 
 const login = require("./routes/login");
 app.use("/api/login", login);
+
+const auth = require("./routes/auth");
+app.use("/api/auth", auth);
 
 const run = async () => {
     app.listen(PORT, () => {
