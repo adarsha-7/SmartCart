@@ -73,32 +73,50 @@ router.get(
     "/google/callback",
     passport.authenticate("google", { session: false }),
     (req, res) => {
-        const user = req.user;
-        const accessToken = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                provider: user.provider,
-            },
-            process.env.JWT_ACCESS_TOKEN_SECRET,
-            { expiresIn: "1h" }
-        );
-        const refreshToken = jwt.sign(
-            {
-                id: user.id,
-                email: user.email,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                provider: user.provider,
-            },
-            process.env.JWT_REFRESH_TOKEN_SECRET,
-            { expiresIn: "7d" }
-        );
+        try {
+            const user = req.user;
+            const accessToken = jwt.sign(
+                {
+                    id: user.id,
+                    email: user.email,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    provider: user.provider,
+                },
+                process.env.JWT_ACCESS_TOKEN_SECRET,
+                { expiresIn: "1h" }
+            );
+            const refreshToken = jwt.sign(
+                {
+                    id: user.id,
+                    email: user.email,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    provider: user.provider,
+                },
+                process.env.JWT_REFRESH_TOKEN_SECRET,
+                { expiresIn: "7d" }
+            );
 
-        //return two cookie containing jwt access token and refresh token
-        //redirect frontend to the dashboard
+            res.cookie("access_token", accessToken, {
+                httpOnly: true,
+                secure: process.env.ENV !== "development",
+                sameSite: "Strict",
+                maxAge: 60 * 60 * 1000,
+            });
+
+            res.cookie("refresh_token", refreshToken, {
+                httpOnly: true,
+                secure: process.env.ENV !== "development",
+                sameSite: "Strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
+            res.redirect(`${FRONTEND_URL}/`);
+        } catch (err) {
+            console.error(err);
+            res.redirect(`${FRONTEND_URL}/auth-error`);
+        }
     }
 );
 
