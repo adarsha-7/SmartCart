@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
@@ -6,6 +7,11 @@ const { PrismaClient } = require("../generated/prisma");
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+const FRONTEND_URL =
+    process.env.ENV == "development"
+        ? process.env.FRONTEND_URL_DEV
+        : process.env.FRONTEND_URL;
 
 router.post("/signup", async (req, res) => {
     const email = req.body.email;
@@ -38,13 +44,8 @@ router.post("/signup", async (req, res) => {
             },
         });
 
-        const FRONTEND_URL =
-            process.env.ENV == "development"
-                ? process.env.FRONTEND_URL_DEV
-                : process.env.FRONTEND_URL;
         const verificationLink = `${FRONTEND_URL}/login/verify?token=${newPendingUser.verificationToken}`;
 
-        //Send email with verificationLink
         console.log(verificationLink);
 
         const transporter = nodemailer.createTransport({
@@ -86,20 +87,21 @@ router.post("/signin", async (req, res) => {
     });
 
     if (user) {
-        if (!user.provider.includes("manual")) {
-            res.json({
-                msg: "This account uses Google for authentication. To use email and password, please sign up.",
-            });
-        }
-
-        const passwordCorrect = await bcrypt.compare(
-            password,
-            user.passwordHash
-        );
-        if (passwordCorrect) {
-            res.json({ msg: "Account exists. Sign in successfully." });
+        if (user.provider.includes("manual")) {
+            const passwordCorrect = bcrypt.compare(password, user.passwordHash);
+            if (passwordCorrect) {
+                try {
+                    createCookies(user, res);
+                    res.json({ success: true, msg: "Login Successful" });
+                } catch (err) {
+                    console.error(err);
+                    res.json({ success: false, msg: "Error occured" });
+                }
+            } else {
+                res.json({ msg: "Incorrect password." });
+            }
         } else {
-            res.json({ msg: "Incorrect password." });
+            res.json({ msg: "This account uses Google for authentication." });
         }
     } else {
         res.json({ msg: "Account does not exist. Please sign up first." });
@@ -126,10 +128,54 @@ router.post("/verify", async (req, res) => {
         await prisma.pendingUser.delete({
             where: { id: pendingUser.id },
         });
-        res.json({
-            msg: "success",
-        });
+
+        try {
+            createCookies(newUser, res);
+            res.json({ success: true, msg: "Sign up Successful" });
+        } catch (err) {
+            console.error(err);
+            res.json({ success: false, msg: "Error occured" });
+        }
     }
 });
+
+function createCookies(user, res) {
+    const accessToken = jwt.sign(
+        {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name || null,
+            last_name: user.last_name || null,
+            provider: user.provider,
+        },
+        process.env.JWT_ACCESS_TOKEN_SECRET,
+        { expiresIn: "5m" }
+    );
+    const refreshToken = jwt.sign(
+        {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name || null,
+            last_name: user.last_name || null,
+            provider: user.provider,
+        },
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    res.cookie("access_token", accessToken, {
+        httpOnly: true,
+        secure: process.env.ENV !== "development",
+        sameSite: "Strict",
+        maxAge: 5 * 60 * 1000,
+    });
+
+    res.cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.ENV !== "development",
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+}
 
 module.exports = router;

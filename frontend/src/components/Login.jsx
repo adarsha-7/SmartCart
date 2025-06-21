@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { ShoppingBasket, WandSparkles, Wallet } from 'lucide-react'
 
@@ -8,6 +9,8 @@ const API_URL =
         : ''
 
 export default function Login() {
+    const navigate = useNavigate()
+
     const [loginType, setLoginType] = useState('signIn')
     const [userMessage, setUserMessage] = useState({
         message: '',
@@ -51,11 +54,17 @@ export default function Login() {
                     })
             } else {
                 axios
-                    .post(`${API_URL}/api/login/signin`, data)
+                    .post(`${API_URL}/api/login/signin`, data, {
+                        withCredentials: true,
+                    })
                     .then((res) => {
-                        setUserMessage((prev) => {
-                            return { ...prev, message: res.data.msg }
-                        })
+                        if (res.data.success) {
+                            navigate('/login/loading-page')
+                        } else {
+                            setUserMessage((prev) => {
+                                return { ...prev, message: res.data.msg }
+                            })
+                        }
                     })
                     .catch((error) => {
                         setUserMessage((prev) => {

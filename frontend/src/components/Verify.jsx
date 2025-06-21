@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
 const API_URL =
@@ -7,48 +8,46 @@ const API_URL =
         : ''
 
 export default function Verify() {
+    const navigate = useNavigate()
+
     const [loading, setLoading] = useState(true)
-    const [message, setMessage] = useState({
-        m1: '',
-        m2: '',
-    })
+    const [message, setMessage] = useState('')
 
     useEffect(() => {
         const token = new URLSearchParams(window.location.search).get('token')
         if (!token) {
-            setMessage({ m1: 'Invalid verification link.' })
+            setMessage('Invalid verification link.')
             setLoading(false)
             return
         }
         axios
-            .post(`${API_URL}/api/login/verify`, { token: token })
+            .post(
+                `${API_URL}/api/login/verify`,
+                { token: token },
+                { withCredentials: true }
+            )
             .then((res) => {
-                if (res.data.msg == 'success') {
-                    setMessage({
-                        m1: 'New account created successfully.',
-                        m2: 'Please Sign In with your new account.',
-                    })
+                if (res.data.success) {
+                    setMessage(
+                        'New account created successfully. Redirecting to dashboard ...'
+                    )
                 }
-                setLoading(false)
+                setTimeout(() => navigate('/'), 3000)
             })
             .catch((error) => {
-                setMessage({ m1: 'Error Occured!' })
+                setMessage('Error Occured!')
                 setLoading(false)
                 console.error(error)
             })
     }, [])
 
     return (
-        <div className="flex h-screen items-center justify-center">
-            {loading ? (
+        <div className="flex h-screen items-center justify-center gap-3">
+            {loading && (
                 <div className="h-16 w-16 animate-spin rounded-full border-5 border-gray-200 border-t-gray-700"></div>
-            ) : (
-                <p className="text-center text-2xl font-medium">
-                    {message.m1}
-                    <br />
-                    {message.m2}
-                </p>
             )}
+
+            <p className="text-center text-2xl font-medium">{message}</p>
         </div>
     )
 }
