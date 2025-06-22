@@ -1,9 +1,11 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
 const { PrismaClient } = require("../generated/prisma");
+
+const sendMail = require("../utils/sendmail");
+const createCookies = require("../utils/createcookies");
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -48,29 +50,11 @@ router.post("/signup", async (req, res) => {
 
         console.log(verificationLink);
 
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            secure: true,
-            port: 465,
-            auth: {
-                user: "studyhub552@gmail.com",
-                pass: "qdwt cnwi badi pjok",
-            },
-        });
+        const mailSubject = "SmartCart Login Verification Link";
+        const mailMessage = `Please click this link to verify your email for SmartCart: ${verificationLink}. \n If you did not attempt to sign in to SmartCart using this email, you can safely ignore this.`;
+        const mailReceiver = newPendingUser.email;
 
-        const mailOptions = {
-            from: "studyhub552@gmail.com",
-            to: newPendingUser.email,
-            subject: "SmartCart Login Verification Link",
-            text: `Please click this link to verify your email for SmartCart: ${verificationLink}. \n If you did not attempt to sign in to SmartCart using this email, you can safely ignore this.`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).send({ error });
-            }
-        });
+        sendMail(mailReceiver, mailSubject, mailMessage);
 
         res.json({
             msg: `An email is sent to ${newPendingUser.email} for verification.`,
@@ -144,44 +128,5 @@ router.post("/verify", async (req, res) => {
         }
     }
 });
-
-function createCookies(user, res) {
-    const accessToken = jwt.sign(
-        {
-            id: user.id,
-            email: user.email,
-            first_name: user.first_name || null,
-            last_name: user.last_name || null,
-            provider: user.provider,
-        },
-        process.env.JWT_ACCESS_TOKEN_SECRET,
-        { expiresIn: "5m" }
-    );
-    const refreshToken = jwt.sign(
-        {
-            id: user.id,
-            email: user.email,
-            first_name: user.first_name || null,
-            last_name: user.last_name || null,
-            provider: user.provider,
-        },
-        process.env.JWT_REFRESH_TOKEN_SECRET,
-        { expiresIn: "7d" }
-    );
-
-    res.cookie("access_token", accessToken, {
-        httpOnly: true,
-        secure: process.env.ENV !== "development",
-        sameSite: "Strict",
-        maxAge: 5 * 60 * 1000,
-    });
-
-    res.cookie("refresh_token", refreshToken, {
-        httpOnly: true,
-        secure: process.env.ENV !== "development",
-        sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-}
 
 module.exports = router;

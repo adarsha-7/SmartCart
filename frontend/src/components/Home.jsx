@@ -5,7 +5,7 @@ import Navbar from './Navbar'
 const API_URL =
     import.meta.env.VITE_ENV === 'development'
         ? import.meta.env.VITE_API_URL_DEV
-        : ''
+        : import.meta.env.VITE_API_URL
 
 export default function Home() {
     const [message, setMessage] = useState({})
@@ -15,18 +15,7 @@ export default function Home() {
             .get(`${API_URL}/api/auth/authentication-test`, {
                 withCredentials: true,
             })
-            .then((res) => {
-                if (res.data.msg == 'Access token refreshed') {
-                    axios
-                        .get(`${API_URL}/api/auth/authentication-test`, {
-                            withCredentials: true,
-                        })
-                        .then((res) => setMessage(res.data))
-                        .catch((err) => console.error(err))
-                } else {
-                    setMessage(res.data)
-                }
-            })
+            .then((res) => setMessage(res.data))
             .catch((err) => console.error(err))
     }, [])
 

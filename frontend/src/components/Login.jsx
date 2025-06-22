@@ -6,7 +6,7 @@ import { ShoppingBasket, WandSparkles, Wallet } from 'lucide-react'
 const API_URL =
     import.meta.env.VITE_ENV == 'development'
         ? import.meta.env.VITE_API_URL_DEV
-        : ''
+        : import.meta.env.VITE_API_URL
 
 export default function Login() {
     const navigate = useNavigate()

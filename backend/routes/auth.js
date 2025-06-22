@@ -5,6 +5,9 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const { PrismaClient } = require("../generated/prisma");
 
+const createCookies = require("../utils/createcookies");
+const authenticate = require("../middleware/authenticate");
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -72,42 +75,7 @@ router.get(
     (req, res) => {
         try {
             const user = req.user;
-            const accessToken = jwt.sign(
-                {
-                    id: user.id,
-                    email: user.email,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    provider: user.provider,
-                },
-                process.env.JWT_ACCESS_TOKEN_SECRET,
-                { expiresIn: "5m" }
-            );
-            const refreshToken = jwt.sign(
-                {
-                    id: user.id,
-                    email: user.email,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    provider: user.provider,
-                },
-                process.env.JWT_REFRESH_TOKEN_SECRET,
-                { expiresIn: "7d" }
-            );
-
-            res.cookie("access_token", accessToken, {
-                httpOnly: true,
-                secure: process.env.ENV !== "development",
-                sameSite: "Strict",
-                maxAge: 5 * 60 * 1000,
-            });
-
-            res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
-                secure: process.env.ENV !== "development",
-                sameSite: "Strict",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-            });
+            createCookies(user, res);
 
             res.redirect(`${FRONTEND_URL}/`);
         } catch (err) {
@@ -119,64 +87,10 @@ router.get(
 
 router.get("/authentication-test", authenticate, (req, res) => {
     res.json({
+        success: true,
         msg: "User is authenticated",
         data: req.access_token_decoded,
     });
 });
-
-function authenticate(req, res, next) {
-    const cookies = req.cookies;
-
-    if (cookies.access_token) {
-        try {
-            const access_token_decoded = jwt.verify(
-                cookies.access_token,
-                process.env.JWT_ACCESS_TOKEN_SECRET
-            );
-            req.access_token_decoded = access_token_decoded;
-            next();
-        } catch (err) {
-            console.error(err);
-            res.json({ msg: "Error occured", error: err.name });
-        }
-    } else if (!cookies.access_token && cookies.refresh_token) {
-        try {
-            const refresh_token_decoded = jwt.verify(
-                cookies.refresh_token,
-                process.env.JWT_REFRESH_TOKEN_SECRET
-            );
-
-            const { id, email, first_name, last_name, provider } =
-                refresh_token_decoded;
-
-            const accessToken = jwt.sign(
-                {
-                    id,
-                    email,
-                    first_name,
-                    last_name,
-                    provider,
-                },
-                process.env.JWT_ACCESS_TOKEN_SECRET,
-                { expiresIn: "5m" }
-            );
-
-            res.cookie("access_token", accessToken, {
-                httpOnly: true,
-                secure: process.env.ENV !== "development",
-                sameSite: "Strict",
-                maxAge: 5 * 60 * 1000,
-            });
-
-            req.access_token_decoded = refresh_token_decoded;
-            next();
-        } catch (err) {
-            console.error(err);
-            res.json({ msg: "Error occured", error: err.name });
-        }
-    } else {
-        res.json({ msg: "User is not authenticated" });
-    }
-}
 
 module.exports = router;
