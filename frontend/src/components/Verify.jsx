@@ -27,12 +27,12 @@ export default function Verify() {
                 { withCredentials: true }
             )
             .then((res) => {
+                setMessage(res.data.msg)
                 if (res.data.success) {
-                    setMessage(
-                        'New account created successfully. Redirecting to dashboard ...'
-                    )
+                    setTimeout(() => navigate('/'), 3000)
+                } else {
+                    setLoading(false)
                 }
-                setTimeout(() => navigate('/'), 3000)
             })
             .catch((error) => {
                 setMessage('Error Occured!')
@@ -42,12 +42,14 @@ export default function Verify() {
     }, [])
 
     return (
-        <div className="flex h-screen items-center justify-center gap-3">
+        <div className="flex h-screen flex-col items-center justify-center bg-white">
             {loading && (
-                <div className="h-16 w-16 animate-spin rounded-full border-5 border-gray-200 border-t-gray-700"></div>
+                <div className="mb-6 h-20 w-20 animate-spin rounded-full border-5 border-gray-200 border-t-gray-500"></div>
             )}
 
-            <p className="text-center text-2xl font-medium">{message}</p>
+            <p className="text-center text-2xl font-medium text-gray-700">
+                {message}
+            </p>
         </div>
     )
 }

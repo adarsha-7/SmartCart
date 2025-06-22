@@ -6,9 +6,9 @@ export default function Loading() {
     setTimeout(() => navigate('/'), 3000)
 
     return (
-        <div className="flex h-screen items-center justify-center gap-5">
-            <div className="h-16 w-16 animate-spin rounded-full border-5 border-gray-200 border-t-gray-700"></div>
-            <p className="text-center text-2xl font-medium">
+        <div className="flex h-screen flex-col items-center justify-center bg-white">
+            <div className="mb-6 h-20 w-20 animate-spin rounded-full border-5 border-gray-200 border-t-gray-500"></div>
+            <p className="text-center text-2xl font-medium text-gray-700">
                 Login Successful. Redirecting to Dashboard ...
             </p>
         </div>

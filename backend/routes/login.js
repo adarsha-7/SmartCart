@@ -114,24 +114,30 @@ router.post("/verify", async (req, res) => {
     });
 
     if (!pendingUser) {
-        res.json({ msg: "Invalid verification link." });
+        res.json({ success: false, msg: "Invalid verification link." });
     } else if (pendingUser.expiresAt < new Date()) {
-        res.json({ msg: "Verification link expired." });
+        res.json({ success: false, msg: "Verification link expired." });
     } else {
-        const newUser = await prisma.user.create({
-            data: {
-                email: pendingUser.email,
-                passwordHash: pendingUser.passwordHash,
-                provider: ["manual"],
-            },
-        });
-        await prisma.pendingUser.delete({
-            where: { id: pendingUser.id },
-        });
+        const [newUser, deletedPendingUser] = await Promise.all([
+            prisma.user.create({
+                data: {
+                    email: pendingUser.email,
+                    passwordHash: pendingUser.passwordHash,
+                    provider: ["manual"],
+                },
+            }),
+
+            prisma.pendingUser.delete({
+                where: { id: pendingUser.id },
+            }),
+        ]);
 
         try {
             createCookies(newUser, res);
-            res.json({ success: true, msg: "Sign up Successful" });
+            res.json({
+                success: true,
+                msg: "New account created successfully. Redirecting to dashboard ...",
+            });
         } catch (err) {
             console.error(err);
             res.json({ success: false, msg: "Error occured" });
