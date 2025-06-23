@@ -1,0 +1,13 @@
+*{
+    margin:0px;
+    padding:0px;
+}
+.footerdiv{
+    background-color: #2D3748;
+    color:#94A3B8;
+    height:60px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-top:200px;
+}   

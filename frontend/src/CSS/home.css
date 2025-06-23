@@ -1,0 +1,28 @@
+.trending-section{
+    background-color: #FFFFFF;
+}
+.trending-section h1{
+    padding-top:80px;
+    padding-left:20px;
+    font-size:30px;
+}
+.trending-products{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:20px;
+}
+.categories-section{
+    background-color: #E2E8F0;
+}
+.categories-section h1{
+    padding-top:80px;
+    padding-left:20px;
+    font-size:30px;
+}
+.categories{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:20px;
+}

@@ -1,0 +1,72 @@
+*{
+    margin:0px;
+    padding:0px;
+}
+.NavigationBar{
+    background-color: #FFFFFF;
+    height: 50px;
+    width:100%;
+    border-bottom:1px solid #e4e5e5;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    position:fixed;
+    top:0;
+    left: 0;
+    z-index: 1000;
+}
+.logo{
+    color:#1E293B;
+    font-size: 20px;
+    padding-left:20px;
+}
+.rightside{
+    color:gray; 
+    font-size: 15px;
+    margin-right: 20px;
+    width:100px;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.rightside span i{
+    font-size: 20px;
+}
+.user{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo:hover, .cart:hover, .user:hover{
+    color: #2563EB;
+    cursor:pointer;
+}
+.searchBar{     
+    width:40%;
+    height:30px;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border:1px solid #bebebe;
+    border-radius:15px;
+    padding-left:10px;
+    overflow:hidden;
+}
+.searchBar i{
+    color:grey;
+}
+.searchBar input{
+    height:100%;
+    width:100%;
+    border:none;
+    padding-left:10px;
+    color:rgb(109, 108, 108);
+}
+input:focus{
+    outline:none;
+}
+.searchBar:has(input:focus){
+    border:1.5px solid #2563EB;
+}
