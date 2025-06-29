@@ -12,18 +12,42 @@ const API_URL =
         : import.meta.env.VITE_API_URL
 
 export default function Home() {
-    const [atStart, setAtStart] = useState(true)
-    const [atEnd, setAtEnd] = useState(false)
+    const [atStartTP, setatStartTP] = useState(true)
+    const [atEndTP, setatEndTP] = useState(false)
 
-    const scrollRef = useRef(null)
+    const scrollRefTP = useRef(null)
 
     useEffect(() => {
-        const section = scrollRef.current
+        const section = scrollRefTP.current
         if (!section) return
 
         const handleScroll = () => {
-            setAtStart(section.scrollLeft === 0)
-            setAtEnd(
+            setatStartTP(section.scrollLeft === 0)
+            setatEndTP(
+                section.scrollLeft + section.clientWidth >=
+                    section.scrollWidth - 1
+            )
+        }
+
+        handleScroll()
+
+        section.addEventListener('scroll', handleScroll)
+
+        return () => section.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const [atStartFP, setatStartFP] = useState(true)
+    const [atEndFP, setatEndFP] = useState(false)
+
+    const scrollRefFP = useRef(null)
+
+    useEffect(() => {
+        const section = scrollRefFP.current
+        if (!section) return
+
+        const handleScroll = () => {
+            setatStartFP(section.scrollLeft === 0)
+            setatEndFP(
                 section.scrollLeft + section.clientWidth >=
                     section.scrollWidth - 1
             )
@@ -45,11 +69,11 @@ export default function Home() {
             .catch((err) => console.error(err))
     }, [])
 
-    const scroll = (direction) => {
-        if (!scrollRef.current) return
+    const scroll = (section, direction) => {
+        if (!scrollRefTP.current || !scrollRefFP.current) return
 
         const screenWidth = window.innerWidth
-        const cardWidth = 180
+        const cardWidth = 185
         let scrollCount
 
         if (screenWidth < 640) {
@@ -66,16 +90,30 @@ export default function Home() {
 
         const scrollAmount = cardWidth * scrollCount
 
-        if (direction === 'right') {
-            scrollRef.current.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth',
-            })
+        if (section == 'TP') {
+            if (direction === 'right') {
+                scrollRefTP.current.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth',
+                })
+            } else {
+                scrollRefTP.current.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth',
+                })
+            }
         } else {
-            scrollRef.current.scrollBy({
-                left: -scrollAmount,
-                behavior: 'smooth',
-            })
+            if (direction === 'right') {
+                scrollRefFP.current.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth',
+                })
+            } else {
+                scrollRefFP.current.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth',
+                })
+            }
         }
     }
 
@@ -88,7 +126,7 @@ export default function Home() {
 
                     <div className="relative">
                         <div
-                            ref={scrollRef}
+                            ref={scrollRefTP}
                             className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth px-2"
                         >
                             {items.map((item) => (
@@ -96,18 +134,51 @@ export default function Home() {
                             ))}
                         </div>
 
-                        {!atStart && (
+                        {!atStartTP && (
                             <button
-                                onClick={() => scroll('left')}
+                                onClick={() => scroll('TP', 'left')}
                                 className="absolute top-1/2 left-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
                             >
                                 ←
                             </button>
                         )}
 
-                        {!atEnd && (
+                        {!atEndTP && (
                             <button
-                                onClick={() => scroll('right')}
+                                onClick={() => scroll('TP', 'right')}
+                                className="absolute top-1/2 right-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
+                            >
+                                →
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex h-100 flex-col gap-5 bg-white px-5 pt-15 pb-5 xl:px-50">
+                    <h2 className="text-3xl font-normal">Featured Products</h2>
+
+                    <div className="relative">
+                        <div
+                            ref={scrollRefFP}
+                            className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth px-2"
+                        >
+                            {items.map((item) => (
+                                <ItemCard id={item.id} key={item.id} />
+                            ))}
+                        </div>
+
+                        {!atStartFP && (
+                            <button
+                                onClick={() => scroll('FP', 'left')}
+                                className="absolute top-1/2 left-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
+                            >
+                                ←
+                            </button>
+                        )}
+
+                        {!atEndFP && (
+                            <button
+                                onClick={() => scroll('FP', 'right')}
                                 className="absolute top-1/2 right-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
                             >
                                 →
