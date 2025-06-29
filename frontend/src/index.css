@@ -15,6 +15,17 @@
     font-style: normal;
 }
 
+@layer utilities {
+    /* Hide scrollbar */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}
+
 @layer base {
     body {
         @apply bg-background font-Inter text-slate-800;
