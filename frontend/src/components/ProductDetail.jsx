@@ -1,16 +1,15 @@
-import { useParams } from "react-router-dom";
-import items from "./itemsSample"; 
+import { useParams } from 'react-router-dom'
 
 export default function ProductDetail() {
-    const { id } = useParams(); 
+    const { id } = useParams()
 
-    const product = items.find(p => p.id.toString() === id); 
+    const product = items.find((p) => p.id.toString() === id)
 
     if (!product) {
-        return <div className="p-4 text-red-600">Product not found</div>;
+        return <div className="p-4 text-red-600">Product not found</div>
     }
 
-    const { name, price, image, rating } = product;
+    const { name, price, image, rating } = product
 
     return (
         <div>
@@ -20,19 +19,14 @@ export default function ProductDetail() {
             <div>
                 <div>
                     <h2>{name}</h2>
-                <p>Rs. {price}</p>
-                <p>⭐{rating}</p>
+                    <p>Rs. {price}</p>
+                    <p>⭐{rating}</p>
                 </div>
 
-                <div>
-                    Product Specifiaction
-                </div>
+                <div>Product Specifiaction</div>
 
-                <div>
-                    Seller Information
-                </div>
+                <div>Seller Information</div>
             </div>
-            
         </div>
-    );
+    )
 }
