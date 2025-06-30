@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import CategoryCard from './CategoryCard'
-import categories from './categorySample'
 
-export default function ShopByCategory() {
+const API_URL =
+    import.meta.env.VITE_ENV == 'development'
+        ? import.meta.env.VITE_API_URL_DEV
+        : import.meta.env.VITE_API_URL
+
+export default function Category({ categories }) {
     const [atStartC, setatStartC] = useState(true)
     const [atEndC, setatEndC] = useState(false)
     const scrollRefC = useRef(null)
@@ -15,7 +19,7 @@ export default function ShopByCategory() {
             setatStartC(section.scrollLeft === 0)
             setatEndC(
                 section.scrollLeft + section.clientWidth >=
-                    section.scrollWidth - 1
+                    section.scrollWidth + 1
             )
         }
 
@@ -43,14 +47,14 @@ export default function ShopByCategory() {
             <div className="relative">
                 <div
                     ref={scrollRefC}
-                    className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth px-2"
+                    className="scrollbar-hide flex h-60 items-center gap-5 overflow-x-auto scroll-smooth px-2"
                 >
                     {categories.map((cat) => (
                         <CategoryCard
                             key={cat.id}
                             name={cat.name}
                             icon={cat.icon}
-                            image={cat.image}
+                            image={cat.imageURL}
                         />
                     ))}
                 </div>

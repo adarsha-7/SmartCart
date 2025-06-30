@@ -14,21 +14,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id           String   @id @default(uuid())
+model User {
+  id           String    @id @default(uuid())
   first_name   String?
   last_name    String?
-  email        String   @unique
+  email        String    @unique
   passwordHash String?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
   provider     String[]
+  isSeller     Boolean   @default(false)
+  Product      Product[]
 }
 
-model pendingUser {
+model PendingUser {
   id                String   @id @default(uuid())
   email             String   @unique
   passwordHash      String
   verificationToken String   @unique
   createdAt         DateTime @default(now())
   expiresAt         DateTime
+}
+
+model Product {
+  id              Int               @id @default(autoincrement())
+  userID          String
+  user            User              @relation(fields: [userID], references: [id])
+  name            String
+  price           Float
+  rating          Float
+  imageURL        String
+  category        Int[]
+  createdAt       DateTime          @default(now())
+  trendingProduct TrendingProduct?
+  featuredProduct FeaturedProduct?
+}
+
+model TrendingProduct {
+  id      Int     @id
+  product Product @relation(fields: [id], references: [id])
+}
+
+model FeaturedProduct {
+  id        Int      @id
+  product   Product  @relation(fields: [id], references: [id])
+  expiresAt DateTime
+}
+
+model Category {
+  id       Int    @id
+  name     String
+  imageURL String
+  icon     String
 }

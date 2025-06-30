@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 
 import ItemCard from './ItemCard'
 
-import items from './itemsSample.js'
-
-export default function FeaturedProducts() {
+export default function FeaturedProducts({ products }) {
     const [atStartFP, setatStartFP] = useState(true)
     const [atEndFP, setatEndFP] = useState(false)
 
@@ -18,7 +16,7 @@ export default function FeaturedProducts() {
             setatStartFP(section.scrollLeft === 0)
             setatEndFP(
                 section.scrollLeft + section.clientWidth >=
-                    section.scrollWidth - 1
+                    section.scrollWidth + 1
             )
         }
 
@@ -55,22 +53,22 @@ export default function FeaturedProducts() {
     }
 
     return (
-        <div className="flex h-80 flex-col gap-5 bg-white px-5 xl:px-50">
-            <h2 className="text-3xl font-normal">Featured Products</h2>
+        <div className="mb-5 flex h-80 flex-col gap-5 bg-white px-5 pb-5 xl:px-50">
+            <h2 className="text-2xl font-normal">Featured Products</h2>
 
             <div className="relative">
                 <div
                     ref={scrollRefFP}
-                    className="scrollbar-hide flex h-65 gap-10 overflow-x-auto scroll-smooth px-2"
+                    className="scrollbar-hide flex h-70 items-center gap-10 overflow-x-auto scroll-smooth px-2"
                 >
-                    {items.map((item) => (
+                    {products.map((item) => (
                         <ItemCard
-                            key={item.id}
-                            id={item.id}
-                            name={item.name}
-                            rating={item.rating}
-                            price={item.price}
-                            image={item.image}
+                            key={item.product.id}
+                            id={item.product.id}
+                            name={item.product.name}
+                            rating={item.product.rating}
+                            price={item.product.price}
+                            image={item.product.imageURL}
                         />
                     ))}
                 </div>

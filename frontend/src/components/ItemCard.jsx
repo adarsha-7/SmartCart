@@ -2,7 +2,7 @@ import { Star } from 'lucide-react'
 
 export default function ItemCard({ id, name, rating, price, image }) {
     return (
-        <div className="h-60 min-w-50 cursor-pointer rounded-lg bg-white shadow-sm hover:shadow-md">
+        <div className="min-w-50 transform cursor-pointer rounded-md bg-white shadow-sm transition duration-300 hover:scale-101 hover:shadow-lg">
             <img
                 src={image}
                 alt={name}
