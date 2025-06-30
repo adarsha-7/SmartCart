@@ -33,22 +33,13 @@ export default function FeaturedProducts() {
         if (!scrollRefFP.current) return
 
         const screenWidth = window.innerWidth
-        const cardWidth = 185
-        let scrollCount
+        let scrollAmount
 
-        if (screenWidth < 640) {
-            scrollCount = 2
-        } else if (screenWidth < 768) {
-            scrollCount = 3
-        } else if (screenWidth < 1024) {
-            scrollCount = 3.8
-        } else if (screenWidth < 1280) {
-            scrollCount = 5
+        if (screenWidth < 1280) {
+            scrollAmount = screenWidth - 100
         } else {
-            scrollCount = 6
+            scrollAmount = screenWidth - 500
         }
-
-        const scrollAmount = cardWidth * scrollCount
 
         if (direction === 'right') {
             scrollRefFP.current.scrollBy({
@@ -64,16 +55,23 @@ export default function FeaturedProducts() {
     }
 
     return (
-        <div className="flex h-100 flex-col gap-5 bg-white px-5 py-5 xl:px-50">
+        <div className="flex h-80 flex-col gap-5 bg-white px-5 xl:px-50">
             <h2 className="text-3xl font-normal">Featured Products</h2>
 
             <div className="relative">
                 <div
                     ref={scrollRefFP}
-                    className="scrollbar-hide flex gap-5 overflow-x-auto scroll-smooth px-2"
+                    className="scrollbar-hide flex h-65 gap-10 overflow-x-auto scroll-smooth px-2"
                 >
                     {items.map((item) => (
-                        <ItemCard id={item.id} key={item.id} />
+                        <ItemCard
+                            key={item.id}
+                            id={item.id}
+                            name={item.name}
+                            rating={item.rating}
+                            price={item.price}
+                            image={item.image}
+                        />
                     ))}
                 </div>
 

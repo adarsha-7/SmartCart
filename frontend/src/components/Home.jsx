@@ -5,6 +5,7 @@ import Footer from './Footer'
 
 import TrendingProducts from './TrendingProducts'
 import FeaturedProducts from './FeaturedProducts'
+import ShopByCategory from './ShopByCategory'
 
 const API_URL =
     import.meta.env.VITE_ENV === 'development'
@@ -27,6 +28,7 @@ export default function Home() {
             <main className="mt-14 md:mt-16"></main>
             <TrendingProducts />
             <FeaturedProducts />
+            <ShopByCategory />
             <Footer />
         </>
     )

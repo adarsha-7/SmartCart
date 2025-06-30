@@ -1,7 +1,23 @@
-export default function ItemCard(props) {
+import { Star } from 'lucide-react'
+
+export default function ItemCard({ id, name, rating, price, image }) {
     return (
-        <div className="h-55 min-w-50 rounded-xl bg-gray-100 shadow-sm">
-            <h1>{props.id}</h1>
+        <div className="h-60 min-w-50 cursor-pointer rounded-lg bg-white shadow-sm hover:shadow-md">
+            <img
+                src={image}
+                alt={name}
+                className="h-40 w-full rounded-t-lg object-contain"
+            />
+            <div className="flex flex-col gap-1 p-2">
+                <h3 className="line-clamp-1 text-sm font-medium text-gray-800">
+                    {name}
+                </h3>
+                <div className="flex items-center gap-1 text-yellow-500">
+                    <Star size={14} fill="currentColor" />
+                    <span className="text-xs text-gray-700">{rating}</span>
+                </div>
+                <p className="text-sm font-medium text-black">Rs. {price}</p>
+            </div>
         </div>
     )
 }
