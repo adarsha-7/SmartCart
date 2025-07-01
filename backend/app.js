@@ -34,6 +34,9 @@ app.use("/api/logout", logout);
 const home = require("./routes/home");
 app.use("/api/home", home);
 
+const product = require("./routes/product");
+app.use("/api/product", product);
+
 const run = async () => {
     app.listen(PORT, () => {
         console.log(`Server listening on http://localhost:${PORT}/api`);

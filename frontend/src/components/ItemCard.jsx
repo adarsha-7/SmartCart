@@ -1,16 +1,11 @@
+import { Link } from 'react-router-dom'
 import { Star } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 export default function ItemCard({ id, name, rating, price, image }) {
-    const navigate = useNavigate()
-
-    const openProductDetail = () => {
-        navigate(`/product/${id}`)
-    }
     return (
-        <div
+        <Link
             className="min-w-50 transform cursor-pointer rounded-md bg-white shadow-sm transition duration-300 hover:scale-101 hover:shadow-lg"
-            onClick={openProductDetail}
+            to={`/product/${id}`}
         >
             <img
                 src={image}
@@ -27,6 +22,6 @@ export default function ItemCard({ id, name, rating, price, image }) {
                 </div>
                 <p className="text-sm font-medium text-black">Rs. {price}</p>
             </div>
-        </div>
+        </Link>
     )
 }
