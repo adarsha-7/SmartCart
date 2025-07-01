@@ -76,7 +76,7 @@ export default function FeaturedProducts({ products }) {
                 {!atStartFP && (
                     <button
                         onClick={() => scroll('left')}
-                        className="absolute top-1/2 left-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
+                        className="absolute top-1/2 left-1 z-5 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
                     >
                         ←
                     </button>
@@ -85,7 +85,7 @@ export default function FeaturedProducts({ products }) {
                 {!atEndFP && (
                     <button
                         onClick={() => scroll('right')}
-                        className="absolute top-1/2 right-1 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
+                        className="absolute top-1/2 right-1 z-5 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/60"
                     >
                         →
                     </button>
