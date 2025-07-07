@@ -8,7 +8,7 @@ const API_URL =
         ? import.meta.env.VITE_API_URL_DEV
         : import.meta.env.VITE_API_URL
 
-export default function Navbar() {
+export default function Navbar({ cartCount }) {
     const [login, setLogin] = useState(false)
 
     useEffect(() => {
@@ -82,9 +82,14 @@ export default function Navbar() {
 
                 <Link
                     to="/cart"
-                    className="flex cursor-pointer items-center gap-2 hover:text-white"
+                    className="relative flex cursor-pointer items-center gap-2 hover:text-white"
                 >
                     <ShoppingCart className="hidden h-5 w-5 md:inline" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 text-xs text-white">
+                            {cartCount}
+                        </span>
+                    )}
                     <span>Cart</span>
                 </Link>
             </div>

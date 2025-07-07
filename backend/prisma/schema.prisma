@@ -24,6 +24,7 @@ model User {
   provider     String[]
   isSeller     Boolean   @default(false)
   Product      Product[]
+  CartItems    CartItem[]
 }
 
 model PendingUser {
@@ -42,11 +43,14 @@ model Product {
   name            String
   price           Float
   rating          Float
+  numberOfRating  Int               @default(0)
+  quantitySold    Int               @default(0)
   imageURL        String
   category        Int[]
   createdAt       DateTime          @default(now())
   trendingProduct TrendingProduct?
   featuredProduct FeaturedProduct?
+  CartItems       CartItem[]
 }
 
 model TrendingProduct {
@@ -65,4 +69,14 @@ model Category {
   name     String
   imageURL String
   icon     String
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int      @default(1)
+  addedAt   DateTime @default(now())
 }

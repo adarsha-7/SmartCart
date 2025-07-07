@@ -84,11 +84,21 @@ router.get(
     }
 );
 
-router.get("/authentication-test", authenticate, (req, res) => {
+router.get("/authentication-test", authenticate, async (req, res) => {
+    const userID = req.access_token_decoded.id;
+    const user = await prisma.user.findUnique({
+        where: { id: userID },
+        include: {
+            _count: {
+                select: { CartItems: true },
+            },
+        },
+    });
     res.json({
         success: true,
         msg: "User is authenticated",
         data: req.access_token_decoded,
+        user,
     });
 });
 
