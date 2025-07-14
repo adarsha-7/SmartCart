@@ -1,6 +1,6 @@
-import ProductCont from "../pages/ProjectContainer";
+import ProductContainer from "./ProjectContainer";
 
-export default function OrderCalc({ items }) {
+export default function OrderCalculator({ items }) {
   const subtotal = items.reduce(
     (sum, item) => sum + Number(item.price) * Number(item.quantity),
     0
