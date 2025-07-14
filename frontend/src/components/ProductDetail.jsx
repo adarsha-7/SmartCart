@@ -76,58 +76,82 @@ export default function ProductDetail() {
             .catch((error) => console.error(error))
     }
 
-    const { name, price, imageURL, rating } = product
+    const { name, price, imageURL, rating, specs, description } = product
 
     return (
         <>
             <Navbar />
-            <div className="m-10 mt-18 flex h-150 w-402 space-x-20 bg-white p-10">
-                <div className="h-100 w-100">
-                    <img src={imageURL}></img>
-                </div>
-                <div>
-                    <div>
-                        <p className="text-2xl leading-normal font-bold">
-                            {name}
-                        </p>
-                        <p className="space-x-8">
-                            <span className="text-2xl leading-normal font-bold">
-                                Rs.{price}{' '}
-                            </span>
-                        </p>
-                        <p className="text-xl leading-normal">⭐{rating}</p>
+
+            <div className="mt-24 px-5 xl:px-50">
+                <div className="flex flex-col overflow-hidden rounded-xl bg-white shadow-md md:flex-row">
+                    <div className="flex items-center justify-center bg-gray-50 p-6 md:w-1/2">
+                        <img
+                            src={imageURL}
+                            alt={name}
+                            className="max-h-96 object-contain"
+                        />
                     </div>
 
-                    <div className="text-20 my-6 inline-block w-200 rounded-lg border-2 border-gray-200 p-5 leading-normal font-semibold">
-                        Product Specifications
-                        <div className="flex flex-wrap">
-                            <p className="w-1/2 p-2 font-normal">Spec1</p>
-                            <p className="w-1/2 p-2 font-normal">Spec2</p>
-                            <p className="w-1/2 p-2 font-normal">Spec3</p>
-                            <p className="w-1/2 p-2 font-normal">Spec4</p>
+                    <div className="p-8 md:w-1/2">
+                        <h1 className="mb-4 text-3xl font-bold">{name}</h1>
+                        <p className="mb-2 text-2xl font-semibold text-gray-800">
+                            Rs. {price}
+                        </p>
+                        <p className="mb-6 text-lg text-yellow-600">
+                            ⭐ {rating}
+                        </p>
+                        <div className="mb-6">
+                            <h2 className="mb-2 text-lg font-semibold">
+                                Product Specifications
+                            </h2>
+                            <div className="flex flex-col text-gray-700">
+                                {specs &&
+                                    specs.map((spec, i) => (
+                                        <p key={i}>- {spec}</p>
+                                    ))}
+                            </div>
                         </div>
-                    </div>
 
-                    <div>Description</div>
-                    <div className="flex space-x-20">
-                        <button className="my-8 rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
-                            Buy Now
-                        </button>
-                        {login && (
-                            <button
-                                onClick={handleAddToCart}
-                                className="my-8 cursor-pointer rounded bg-black px-4 py-2 text-white transition hover:bg-gray-800"
-                            >
-                                Add to Cart
-                            </button>
+                        <div className="mb-6">
+                            <h2 className="mb-2 text-lg font-semibold">
+                                Description
+                            </h2>
+                            <p className="text-gray-700">
+                                {description && description}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4">
+                            {login && (
+                                <button className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
+                                    Buy Now
+                                </button>
+                            )}
+                            {login && (
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="cursor-pointer rounded bg-black px-6 py-2 text-white hover:bg-gray-800"
+                                >
+                                    Add to Cart
+                                </button>
+                            )}
+                        </div>
+
+                        {message && (
+                            <p className="mt-4 text-sm text-red-500">
+                                {message}
+                            </p>
                         )}
                     </div>
-                    <p className="text-sm text-red-500">{message}</p>
                 </div>
             </div>
-            <TrendingProducts products={data.trendingProducts} />
-            <FeaturedProducts products={data.featuredProducts} />
-            <Category categories={data.categories} />
+
+            <div className="mt-10">
+                <TrendingProducts products={data.trendingProducts} />
+                <FeaturedProducts products={data.featuredProducts} />
+                <Category categories={data.categories} />
+            </div>
+
             <Footer />
         </>
     )

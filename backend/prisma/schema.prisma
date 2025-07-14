@@ -46,7 +46,9 @@ model Product {
   numberOfRating  Int               @default(0)
   quantitySold    Int               @default(0)
   imageURL        String
-  category        Int[]
+  categories      Category[]        @relation("ProductCategories")
+  specs           String[]
+  description     String?
   createdAt       DateTime          @default(now())
   trendingProduct TrendingProduct?
   featuredProduct FeaturedProduct?
@@ -65,10 +67,11 @@ model FeaturedProduct {
 }
 
 model Category {
-  id       Int    @id
-  name     String
-  imageURL String
-  icon     String
+  id         Int       @id
+  name       String
+  imageURL   String
+  icon       String
+  products   Product[] @relation("ProductCategories")
 }
 
 model CartItem {

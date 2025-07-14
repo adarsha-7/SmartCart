@@ -28,10 +28,11 @@ export default function Home() {
     return (
         <>
             <Navbar />
-            <main className="mt-14 md:mt-16"></main>
-            <TrendingProducts products={data.trendingProducts} />
-            <FeaturedProducts products={data.featuredProducts} />
-            <Category categories={data.categories} />
+            <main className="mt-14 md:mt-16">
+                <TrendingProducts products={data.trendingProducts} />
+                <FeaturedProducts products={data.featuredProducts} />
+                <Category categories={data.categories} />
+            </main>
             <Footer />
         </>
     )
