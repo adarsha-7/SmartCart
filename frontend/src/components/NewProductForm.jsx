@@ -1,7 +1,7 @@
 import { Upload, X, Camera } from "lucide-react";
 import { useState } from "react";
 
-function Form() {
+export default function Form() {
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -378,5 +378,3 @@ function Form() {
     </>
   );
 }
-
-export default Form;
