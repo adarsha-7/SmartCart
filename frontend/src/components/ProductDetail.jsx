@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -13,15 +13,15 @@ const API_URL =
         : import.meta.env.VITE_API_URL
 
 export default function ProductDetail() {
+    const [product, setProduct] = useState({})
     const { id } = useParams()
 
-    const [product, setProduct] = useState({})
-
+    const location = useLocation()
     useEffect(() => {
         axios
             .get(`${API_URL}/api/product?id=${id}`)
             .then((res) => setProduct(res.data.product))
-    }, [])
+    }, [location])
 
     //determine if user is logged in or not, if yes, give "add to cart" option
 
@@ -76,14 +76,14 @@ export default function ProductDetail() {
             .catch((error) => console.error(error))
     }
 
-    const { name, price, image, rating } = product
+    const { name, price, imageURL, rating } = product
 
     return (
         <>
             <Navbar />
             <div className="m-10 mt-18 flex h-150 w-402 space-x-20 bg-white p-10">
-                <div className="h-full w-[40%] bg-amber-100">
-                    <img src={image}></img>
+                <div className="h-100 w-100">
+                    <img src={imageURL}></img>
                 </div>
                 <div>
                     <div>
@@ -93,9 +93,6 @@ export default function ProductDetail() {
                         <p className="space-x-8">
                             <span className="text-2xl leading-normal font-bold">
                                 Rs.{price}{' '}
-                            </span>
-                            <span className="text-xl leading-normal text-gray-400 line-through">
-                                Rs.{Math.round(price * 1.1)}
                             </span>
                         </p>
                         <p className="text-xl leading-normal">⭐{rating}</p>

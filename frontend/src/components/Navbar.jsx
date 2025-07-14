@@ -41,7 +41,7 @@ export default function Navbar({ cartCount }) {
                 <Link to="/" className="flex items-center gap-2">
                     <img
                         className="h-8 w-8 md:h-10 md:w-10"
-                        src="icons/logo_white.png"
+                        src="/icons/logo_white.png"
                         alt="logo"
                     />
                     <span className="hidden sm:inline">SmartCart</span>
