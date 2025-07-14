@@ -8,8 +8,12 @@ const API_URL =
         ? import.meta.env.VITE_API_URL_DEV
         : import.meta.env.VITE_API_URL
 
-export default function Navbar({ cartCount }) {
+export default function Navbar() {
     const [login, setLogin] = useState(false)
+
+    //for cart count
+    const [user, setUser] = useState({})
+    const [cartCount, setCartCount] = useState(0)
 
     useEffect(() => {
         axios
@@ -18,9 +22,11 @@ export default function Navbar({ cartCount }) {
             })
             .then((res) => {
                 setLogin(res.data.success)
+                setUser(res.data.user)
+                setCartCount(res.data.user._count.CartItems)
             })
             .catch((err) => console.error(err))
-    }, [])
+    }, [login])
 
     function logout() {
         axios

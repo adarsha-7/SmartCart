@@ -13,22 +13,6 @@ const API_URL =
         : import.meta.env.VITE_API_URL
 
 export default function Home() {
-    //for cart count
-    const [user, setUser] = useState({})
-    const [cartCount, setCartCount] = useState(0)
-
-    useEffect(() => {
-        axios
-            .get(`${API_URL}/api/auth/authentication-test`, {
-                withCredentials: true,
-            })
-            .then((res) => {
-                setUser(res.data.user)
-                setCartCount(res.data.user._count.CartItems)
-            })
-            .catch((err) => console.error(err))
-    }, [])
-
     //get content data
     const [data, setData] = useState({
         trendingProducts: [],
@@ -43,7 +27,7 @@ export default function Home() {
 
     return (
         <>
-            <Navbar cartCount={cartCount} />
+            <Navbar />
             <main className="mt-14 md:mt-16"></main>
             <TrendingProducts products={data.trendingProducts} />
             <FeaturedProducts products={data.featuredProducts} />
