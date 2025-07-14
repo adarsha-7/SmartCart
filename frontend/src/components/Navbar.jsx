@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Search, User, ShoppingCart } from 'lucide-react'
+import { Search, User, ShoppingCart, Plus } from 'lucide-react'
 import axios from 'axios'
 
 const API_URL =
@@ -66,6 +66,16 @@ export default function Navbar() {
             </div>
 
             <div className="flex shrink-0 items-center gap-4 text-sm whitespace-nowrap text-gray-200 md:gap-8 md:text-base">
+                {login && (
+                    <Link
+                        to="/new-product"
+                        className="relative flex cursor-pointer items-center gap-2 hover:text-white"
+                    >
+                        <Plus className="hidden h-5 w-5 md:inline" />
+                        Add
+                    </Link>
+                )}
+
                 <div className="flex items-center gap-2">
                     {!login ? (
                         <Link
@@ -86,18 +96,20 @@ export default function Navbar() {
                     )}
                 </div>
 
-                <Link
-                    to="/cart"
-                    className="relative flex cursor-pointer items-center gap-2 hover:text-white"
-                >
-                    <ShoppingCart className="hidden h-5 w-5 md:inline" />
-                    {cartCount > 0 && (
-                        <span className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 text-xs text-white">
-                            {cartCount}
-                        </span>
-                    )}
-                    <span>Cart</span>
-                </Link>
+                {login && (
+                    <Link
+                        to="/cart"
+                        className="relative flex cursor-pointer items-center gap-2 hover:text-white"
+                    >
+                        <ShoppingCart className="hidden h-5 w-5 md:inline" />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 text-xs text-white">
+                                {cartCount}
+                            </span>
+                        )}
+                        <span>Cart</span>
+                    </Link>
+                )}
             </div>
         </nav>
     )
