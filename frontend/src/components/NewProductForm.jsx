@@ -1,7 +1,7 @@
 import { Upload, X, Camera } from "lucide-react";
 import { useState } from "react";
 
-export default function Form() {
+export default function NewProductForm() {
   const [formData, setFormData] = useState({
     title: "",
     category: "",
