@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
-import Navbar from "./Navbar" 
-import Footer from "./Footer"
-import TrendingProducts from "./TrendingProducts";
-import FeaturedProducts from "./FeaturedProducts";
+import Navbar from './Navbar'
+import Footer from './Footer'
+import TrendingProducts from './TrendingProducts'
+import FeaturedProducts from './FeaturedProducts'
 import Category from './Category'
 
 const API_URL =
@@ -42,7 +42,7 @@ export default function ProductDetail() {
 
     const [message, setMessage] = useState('')
 
-     const [data, setData] = useState({
+    const [data, setData] = useState({
         trendingProducts: [],
         featuredProducts: [],
         categories: [],
@@ -79,77 +79,59 @@ export default function ProductDetail() {
     const { name, price, image, rating } = product
 
     return (
-    
         <>
-        <Navbar/>
-        <div className="w-402 h-150 bg-white m-10 mt-18 p-10 flex space-x-20">
-            <div className="w-[40%] h-full bg-amber-100">
-                <img src={image}></img>
-            </div>
-            <div>
-                <div>
-                <p className="text-2xl font-bold leading-normal">{name}</p>
-                <p className="space-x-8">
-                    <span className="text-2xl font-bold leading-normal">Rs.{price} </span>
-                    <span className="text-xl text-gray-400 leading-normal line-through">Rs.{Math.round(price*1.1)}</span>
-                </p>
-                <p className="text-xl leading-normal">⭐{rating}</p>
+            <Navbar />
+            <div className="m-10 mt-18 flex h-150 w-402 space-x-20 bg-white p-10">
+                <div className="h-full w-[40%] bg-amber-100">
+                    <img src={image}></img>
                 </div>
+                <div>
+                    <div>
+                        <p className="text-2xl leading-normal font-bold">
+                            {name}
+                        </p>
+                        <p className="space-x-8">
+                            <span className="text-2xl leading-normal font-bold">
+                                Rs.{price}{' '}
+                            </span>
+                            <span className="text-xl leading-normal text-gray-400 line-through">
+                                Rs.{Math.round(price * 1.1)}
+                            </span>
+                        </p>
+                        <p className="text-xl leading-normal">⭐{rating}</p>
+                    </div>
 
-                <div className="text-20 w-200 font-semibold leading-normal inline-block border-2 border-gray-200 rounded-lg my-6 p-5">
-                    Product Specifications
+                    <div className="text-20 my-6 inline-block w-200 rounded-lg border-2 border-gray-200 p-5 leading-normal font-semibold">
+                        Product Specifications
                         <div className="flex flex-wrap">
                             <p className="w-1/2 p-2 font-normal">Spec1</p>
                             <p className="w-1/2 p-2 font-normal">Spec2</p>
                             <p className="w-1/2 p-2 font-normal">Spec3</p>
                             <p className="w-1/2 p-2 font-normal">Spec4</p>
                         </div>
-                </div>
+                    </div>
 
-                <div>
-                    Description
-                </div>
-                <div className="flex space-x-20">
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition my-8">Buy Now</button>
-                    <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition my-8">Add to Cart</button>
+                    <div>Description</div>
+                    <div className="flex space-x-20">
+                        <button className="my-8 rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
+                            Buy Now
+                        </button>
+                        {login && (
+                            <button
+                                onClick={handleAddToCart}
+                                className="my-8 cursor-pointer rounded bg-black px-4 py-2 text-white transition hover:bg-gray-800"
+                            >
+                                Add to Cart
+                            </button>
+                        )}
+                    </div>
+                    <p className="text-sm text-red-500">{message}</p>
                 </div>
             </div>
-            
-        </div>
-        <TrendingProducts products={data.trendingProducts} />
-        <FeaturedProducts products={data.featuredProducts} />
-        <Footer/>
-       </>
-
-    );
+            <TrendingProducts products={data.trendingProducts} />
+            <FeaturedProducts products={data.featuredProducts} />
+            <Category categories={data.categories} />
+            <Footer />
+        </>
+    )
 }
-
-
-
-// <div>
-        //     <div>
-        //         <img src={image}></img>
-        //     </div>
-        //     <div>
-        //         <div>
-        //             <h2>{name}</h2>
-        //             <p>Rs. {price}</p>
-        //             <p>⭐{rating}</p>
-        //         </div>
-
-        //         <div>Product Specifiaction</div>
-
-        //         <div>Seller Information</div>
-
-        //         {login && (
-        //             <button
-        //                 className="cursor-pointer"
-        //                 onClick={handleAddToCart}
-        //             >
-        //                 Add to Cart
-        //             </button>
-        //         )}
-
-        //         <p className="text-sm text-red-500">{message}</p>
-        //     </div>
-        // </d
