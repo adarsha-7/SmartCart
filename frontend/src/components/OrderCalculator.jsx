@@ -1,8 +1,6 @@
-import ProductContainer from './Cart'
-
 export default function OrderCalculator({ items }) {
     const subtotal = items.reduce(
-        (sum, item) => sum + Number(item.price) * Number(item.quantity),
+        (sum, item) => sum + Number(item.product.price) * Number(item.quantity),
         0
     )
 
@@ -18,24 +16,24 @@ export default function OrderCalculator({ items }) {
                     </h2>
                     <div className="flex justify-between">
                         <span className="pb-3 text-gray-400">Subtotal</span>
-                        <span className="">${subtotal.toFixed(2)}</span>
+                        <span className="">Rs. {subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="pb-3 text-gray-400">Shipping</span>
-                        <span className="">${shipping.toFixed(2)}</span>
+                        <span className="">Rs. {shipping.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="pb-3 text-gray-400">Tax</span>
-                        <span className="">${tax.toFixed(2)}</span>
+                        <span className="">Rs. {tax.toFixed(2)}</span>
                     </div>
                 </div>
                 <hr className="ml-5 w-5/6 border-t border-gray-200 pb-6" />
                 <div className="p-3">
                     <div className="flex justify-between text-[20px] font-bold">
                         <span className="pb-3">Total</span>
-                        <span className="">${total.toFixed(2)}</span>
+                        <span className="">Rs. {total.toFixed(2)}</span>
                     </div>
-                    <div className="flex h-12 items-center justify-center rounded-2xl bg-black text-white">
+                    <div className="flex h-12 cursor-pointer items-center justify-center rounded-2xl bg-gray-800 text-white hover:bg-gray-900">
                         Proceed to Checkout
                     </div>
                 </div>

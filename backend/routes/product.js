@@ -55,4 +55,70 @@ router.post("/add-to-cart", authenticate, async (req, res) => {
     }
 });
 
+router.get("/cart-items", async (req, res) => {
+    const userID = req.query.userID;
+    const cartItems = await prisma.cartItem.findMany({
+        where: { userId: userID },
+        include: {
+            product: true,
+        },
+    });
+    res.json({ cartItems });
+});
+
+router.patch("/cart-item/increase", async (req, res) => {
+    const userID = req.query.userID;
+    const itemID = parseInt(req.query.itemID);
+
+    try {
+        const updatedItem = await prisma.cartItem.update({
+            where: { userId: userID, id: itemID },
+            data: {
+                quantity: {
+                    increment: 1,
+                },
+            },
+        });
+        res.json({ success: true, cartItem: updatedItem });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, error });
+    }
+});
+
+router.patch("/cart-item/decrease", async (req, res) => {
+    const userID = req.query.userID;
+    const itemID = parseInt(req.query.itemID);
+
+    try {
+        const updatedItem = await prisma.cartItem.update({
+            where: { userId: userID, id: itemID },
+            data: {
+                quantity: {
+                    decrement: 1,
+                },
+            },
+        });
+        res.json({ success: true, cartItem: updatedItem });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, error });
+    }
+});
+
+router.delete("/cart-item/delete", async (req, res) => {
+    const userID = req.query.userID;
+    const itemID = parseInt(req.query.itemID);
+
+    try {
+        await prisma.cartItem.delete({
+            where: { userId: userID, id: itemID },
+        });
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, error });
+    }
+});
+
 module.exports = router;
