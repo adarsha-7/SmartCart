@@ -3,8 +3,8 @@ import { useParams, useLocation } from 'react-router-dom'
 import axios from 'axios'
 import Navbar from './Navbar'
 import Footer from './Footer'
-import TrendingProducts from './TrendingProducts'
-import FeaturedProducts from './FeaturedProducts'
+import OtherProducts1 from './OtherProducts1'
+import OtherProducts2 from './OtherProducts2'
 import Category from './Category'
 
 const API_URL =
@@ -45,6 +45,7 @@ export default function ProductDetail() {
     const [data, setData] = useState({
         trendingProducts: [],
         featuredProducts: [],
+        otherProducts: [],
         categories: [],
     })
     useEffect(() => {
@@ -93,7 +94,7 @@ export default function ProductDetail() {
                     </div>
 
                     <div className="p-8 md:w-1/2">
-                        <h1 className="mb-4 text-3xl font-bold">{name}</h1>
+                        <h1 className="mb-4 text-xl font-medium">{name}</h1>
                         <p className="mb-2 text-2xl font-semibold text-gray-800">
                             Rs. {price}
                         </p>
@@ -147,8 +148,8 @@ export default function ProductDetail() {
             </div>
 
             <div className="mt-10">
-                <TrendingProducts products={data.trendingProducts} />
-                <FeaturedProducts products={data.featuredProducts} />
+                <OtherProducts1 products={data.otherProducts.slice(0, 20)} />
+                <OtherProducts2 products={data.otherProducts.slice(20, 40)} />
                 <Category categories={data.categories} />
             </div>
 

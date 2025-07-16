@@ -10,18 +10,19 @@ router.get("/content", async (req, res) => {
         const [categories, trendingProducts, featuredProducts] =
             await Promise.all([
                 prisma.category.findMany(),
-                prisma.trendingProduct.findMany({
-                    include: { product: true },
-                }),
-                prisma.featuredProduct.findMany({
-                    include: { product: true },
-                }),
+                prisma.trendingProduct.findMany({ include: { product: true } }),
+                prisma.featuredProduct.findMany({ include: { product: true } }),
             ]);
+
+        const otherProducts = await prisma.$queryRaw`
+            SELECT * FROM "Product" ORDER BY RANDOM() LIMIT 40
+        `;
 
         const data = {
             categories,
             trendingProducts,
             featuredProducts,
+            otherProducts,
         };
 
         res.json(data);
