@@ -16,6 +16,7 @@ model User {
   passwordHash String?
   createdAt    DateTime   @default(now())
   provider     String[]
+  image        String?
   isSeller     Boolean    @default(false)
   CartItems    CartItem[]
   Product      Product[]
@@ -41,7 +42,6 @@ model Product {
   numberOfRating  Int              @default(0)
   quantitySold    Int              @default(0)
   description     String?
-  specs           String[]
   CartItems       CartItem[]
   featuredProduct FeaturedProduct?
   user            User             @relation(fields: [userID], references: [id])

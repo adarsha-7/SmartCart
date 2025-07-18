@@ -70,8 +70,8 @@ export default function NewProductForm() {
 
         if (!formData.title.trim()) {
             newErrors.title = 'Title is required'
-        } else if (formData.title.length > 100) {
-            newErrors.title = 'Title must be 100 characters or less'
+        } else if (formData.title.length > 150) {
+            newErrors.title = 'Title must be 150 characters or less'
         }
 
         if (!formData.category) {
@@ -96,16 +96,13 @@ export default function NewProductForm() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = (isDraft = false) => {
-        if (!validateForm() && !isDraft) return
+    const handleSubmit = () => {
+        if (!validateForm()) return
 
-        const actionType = isDraft ? 'draft' : 'publish'
-        console.log(`${actionType} listing:`, formData)
+        console.log(`Publish listing:`, formData)
 
         // Here you would typically send data to your backend
-        alert(
-            `Listing ${isDraft ? 'saved as draft' : 'published'} successfully!`
-        )
+        alert(`Listing Published successfully!`)
     }
 
     return (
@@ -117,7 +114,7 @@ export default function NewProductForm() {
                             List Your Item
                         </h2>
                         <p className="text-gray-400">
-                            Fill in the details to list your second-hand item
+                            Fill in the details to list your item
                         </p>
                     </div>
                     <div className="space-y-6">
@@ -146,7 +143,7 @@ export default function NewProductForm() {
                             )}
                             <p className="mt-1 text-xs text-gray-400">
                                 Be specific and concise ({formData.title.length}
-                                /100 characters)
+                                /150 characters)
                             </p>
                         </div>
 
@@ -167,14 +164,24 @@ export default function NewProductForm() {
                                 <option value="" disabled>
                                     Select a category
                                 </option>
-                                <option value="electronics">Electronics</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="clothing">Clothing</option>
-                                <option value="books">Books</option>
-                                <option value="sports">
-                                    Sports & Outdoors
+                                <option value="1">Electronics</option>
+                                <option value="2">Fashion</option>
+                                <option value="3">Home & Living</option>
+                                <option value="4">Sports</option>
+                                <option value="5">Books</option>
+                                <option value="6">
+                                    Beauty & Personal Care
                                 </option>
-                                <option value="other">Other</option>
+                                <option value="7">Gaming</option>
+                                <option value="8">Toys & Baby Products</option>
+                                <option value="9">Groceries</option>
+                                <option value="10">Automotive & Tools</option>
+                                <option value="11">Health & Wellness</option>
+                                <option value="12">Music & Instruments</option>
+                                <option value="13">Office & Stationery</option>
+                                <option value="14">Pets & Animals</option>
+                                <option value="15">Travel & Outdoors</option>
+                                <option value="0">Other</option>
                             </select>
                             {errors.category && (
                                 <p className="mt-1 text-xs text-red-500">
@@ -189,7 +196,7 @@ export default function NewProductForm() {
                             </label>
                             <div className="relative">
                                 <span className="absolute top-2 left-3 text-gray-500">
-                                    $
+                                    Rs
                                 </span>
                                 <input
                                     type="number"
@@ -197,7 +204,7 @@ export default function NewProductForm() {
                                     value={formData.price}
                                     onChange={handleInputChange}
                                     placeholder="0.00"
-                                    step="0.01"
+                                    step="10"
                                     min="0"
                                     className={`w-full rounded-md border py-2 pr-3 pl-8 ${
                                         errors.price
@@ -274,6 +281,7 @@ export default function NewProductForm() {
                                 onChange={handleInputChange}
                                 placeholder="Describe your item..."
                                 rows={5}
+                                maxLength={1000}
                                 className={`w-full resize-none rounded-md border px-3 py-2 ${
                                     errors.description
                                         ? 'border-red-500'
@@ -287,7 +295,8 @@ export default function NewProductForm() {
                             )}
                             <p className="mt-1 text-xs text-gray-500">
                                 Describe the item's features, history, and any
-                                defects
+                                defects ({formData.description.length}
+                                /1000 characters)
                             </p>
                         </div>
 
@@ -353,65 +362,7 @@ export default function NewProductForm() {
 
                 <hr className="mt-8 text-gray-400" />
 
-                <div className="mt-8">
-                    <div className="mb-5 text-xl font-semibold">
-                        Preview Your Listing
-                    </div>
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                        <p className="mb-2 block text-sm font-medium text-gray-900">
-                            Preview
-                        </p>
-                        <p className="mb-8 text-xs text-gray-500">
-                            This is how your listing will appear to buyers
-                        </p>
-
-                        {/* Preview Image */}
-                        <div className="mb-4 flex h-60 items-center justify-center rounded-lg">
-                            {previewImages.length > 0 ? (
-                                <img
-                                    src={previewImages[0].preview}
-                                    alt="Preview"
-                                    className="w-half h-full rounded-lg object-cover"
-                                />
-                            ) : (
-                                <div className="flex flex-col items-center">
-                                    <Camera className="mb-2 h-8 w-8 text-gray-400" />
-                                    <p className="text-xs text-gray-500">
-                                        Upload images to preview
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="space-y-1">
-                            <p className="font-medium text-gray-900">
-                                {formData.title || 'Item Title'}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                {formData.description ||
-                                    'Description Preview...'}
-                            </p>
-                            <div className="flex items-center justify-between">
-                                <p className="font-semibold text-gray-900">
-                                    ${formData.price || '0.00'}
-                                </p>
-                                {formData.condition && (
-                                    <span className="rounded bg-gray-100 px-2 py-1 text-xs">
-                                        {formData.condition}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="mt-8 flex justify-end space-x-3.5">
-                    <button
-                        onClick={() => handleSubmit(true)}
-                        className="cursor-pointer rounded-lg border border-gray-300 p-2 hover:bg-gray-100"
-                    >
-                        Save as Draft
-                    </button>
                     <button
                         onClick={() => handleSubmit(false)}
                         className="cursor-pointer rounded-lg border border-gray-300 bg-gray-800 p-2 text-white hover:bg-gray-900"

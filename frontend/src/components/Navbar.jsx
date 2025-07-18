@@ -110,6 +110,23 @@ export default function Navbar() {
                         <span>Cart</span>
                     </Link>
                 )}
+
+                {login && (
+                    <Link
+                        to="/profile"
+                        className="relative flex items-center hover:text-white"
+                    >
+                        {user.image ? (
+                            <img
+                                src={user.image}
+                                alt="Profile"
+                                className="h-5 w-5 rounded-full object-cover md:h-8 md:w-8"
+                            />
+                        ) : (
+                            <User className="h-5 w-5 rounded-full bg-gray-600 p-1 md:h-8 md:w-8" />
+                        )}
+                    </Link>
+                )}
             </div>
         </nav>
     )

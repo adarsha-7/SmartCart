@@ -33,6 +33,7 @@ passport.use(
                 const fullName = profile.displayName.split(" ");
                 const firstName = fullName[0];
                 const lastName = fullName.slice(1).join(" ");
+                const image = profile.photos?.[0]?.value;
 
                 if (!user) {
                     user = await prisma.user.create({
@@ -42,6 +43,7 @@ passport.use(
                             email: email,
                             provider: ["google"],
                             passwordHash: null,
+                            image: image,
                         },
                     });
                 } else if (!user.provider.includes("google")) {
@@ -49,6 +51,33 @@ passport.use(
                         where: { email: email },
                         data: {
                             provider: [...user.provider, "google"],
+                            first_name: firstName,
+                            last_name: lastName,
+                        },
+                    });
+                }
+
+                if (!user.image) {
+                    user = await prisma.user.update({
+                        where: { email: email },
+                        data: {
+                            image: image,
+                        },
+                    });
+                }
+                if (!user.first_name) {
+                    user = await prisma.user.update({
+                        where: { email: email },
+                        data: {
+                            first_name: firstName,
+                        },
+                    });
+                }
+                if (!user.last_name) {
+                    user = await prisma.user.update({
+                        where: { email: email },
+                        data: {
+                            last_name: lastName,
                         },
                     });
                 }

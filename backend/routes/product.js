@@ -7,15 +7,42 @@ const authenticate = require("../middleware/authenticate");
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
     const productID = parseInt(req.query.id);
-    prisma.product
-        .findUnique({ where: { id: productID } })
-        .then((product) => res.json({ product }))
-        .catch((error) => {
-            console.error(error);
-            res.json(error);
+    const userID = req.query.userID;
+
+    if (!productID) {
+        return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    try {
+        const product = await prisma.product.findUnique({
+            where: { id: productID },
+            include: {
+                featuredProduct: true,
+                trendingProduct: true,
+                user: true,
+                categories: true,
+                subCategories: true,
+                CartItems: userID
+                    ? {
+                          where: {
+                              userId: userID,
+                          },
+                      }
+                    : true,
+            },
         });
+
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.json({ product });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 router.post("/add-to-cart", authenticate, async (req, res) => {

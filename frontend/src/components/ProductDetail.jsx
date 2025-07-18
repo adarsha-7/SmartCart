@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
+import { CheckCircle, Eye, Flame, ShoppingCart } from 'lucide-react'
 import axios from 'axios'
 import Navbar from './Navbar'
 import Footer from './Footer'
@@ -14,13 +15,18 @@ const API_URL =
 
 export default function ProductDetail() {
     const [product, setProduct] = useState({})
+    const [inCart, setInCart] = useState(false)
+
     const { id } = useParams()
 
     const location = useLocation()
     useEffect(() => {
-        axios
-            .get(`${API_URL}/api/product?id=${id}`)
-            .then((res) => setProduct(res.data.product))
+        axios.get(`${API_URL}/api/product?id=${id}`).then((res) => {
+            const p = res.data.product
+            setProduct(p)
+            setInCart(p.CartItems && p.CartItems.length > 0)
+            console.log(res.data.product)
+        })
     }, [location])
 
     //determine if user is logged in or not, if yes, give "add to cart" option
@@ -77,7 +83,7 @@ export default function ProductDetail() {
             .catch((error) => console.error(error))
     }
 
-    const { name, price, imageURL, rating, specs, description } = product
+    const { name, price, imageURL, rating, description } = product
 
     return (
         <>
@@ -101,15 +107,67 @@ export default function ProductDetail() {
                         <p className="mb-6 text-lg text-yellow-600">
                             ⭐ {rating}
                         </p>
-                        <div className="mb-6">
-                            <h2 className="mb-2 text-lg font-semibold">
-                                Product Specifications
+
+                        <div className="mb-4 flex flex-wrap items-center gap-4">
+                            {product.featuredProduct && (
+                                <span className="flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-800">
+                                    <Eye className="h-4 w-4" /> Featured
+                                </span>
+                            )}
+                            {product.trendingProduct && (
+                                <span className="flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-sm text-orange-800">
+                                    <Flame className="h-4 w-4" /> Trending
+                                </span>
+                            )}
+                            {inCart && (
+                                <span className="flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm text-green-800">
+                                    <CheckCircle className="h-4 w-4" /> In Cart
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="mt-4 mb-6 flex items-center gap-4">
+                            <img
+                                src={product.user?.image}
+                                alt={`${product.user?.first_name} ${product.user?.last_name}`}
+                                className="h-12 w-12 rounded-full object-cover"
+                            />
+                            <div>
+                                <p className="text-sm font-semibold">
+                                    {product.user?.first_name}{' '}
+                                    {product.user?.last_name}
+                                </p>
+                                <p className="text-xs text-gray-500">Seller</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-4">
+                            <h2 className="mb-2 text-sm font-semibold text-gray-600">
+                                Categories
                             </h2>
-                            <div className="flex flex-col text-gray-700">
-                                {specs &&
-                                    specs.map((spec, i) => (
-                                        <p key={i}>- {spec}</p>
-                                    ))}
+                            <div className="flex flex-wrap gap-2 text-sm">
+                                {product.categories?.map((cat) => (
+                                    <span
+                                        key={cat.id}
+                                        className="rounded bg-gray-100 px-3 py-1 text-gray-800"
+                                    >
+                                        {cat.name}
+                                    </span>
+                                ))}
+                            </div>
+                            <br />
+                            <h2 className="mb-2 text-sm font-semibold text-gray-600">
+                                Sub-Categories
+                            </h2>
+                            <div className="flex flex-wrap gap-2 text-sm">
+                                {product.subCategories?.map((sub) => (
+                                    <span
+                                        key={sub.id}
+                                        className="rounded bg-gray-200 px-3 py-1 text-gray-700"
+                                    >
+                                        {sub.name}
+                                    </span>
+                                ))}
                             </div>
                         </div>
 

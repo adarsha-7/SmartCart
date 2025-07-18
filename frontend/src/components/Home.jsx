@@ -25,7 +25,6 @@ export default function Home() {
     useEffect(() => {
         axios.get(`${API_URL}/api/home/content`).then((res) => {
             setData(res.data)
-            console.log(res.data)
         })
     }, [])
 
