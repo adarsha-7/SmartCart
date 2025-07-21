@@ -10,6 +10,7 @@ const API_URL =
 
 export default function Navbar() {
     const [login, setLogin] = useState(false)
+    const [searchTerm, setSearchTerm] = useState('')
 
     //for cart count
     const [user, setUser] = useState({})
@@ -59,10 +60,15 @@ export default function Navbar() {
                     className="h-8 w-full bg-transparent text-sm text-white placeholder-gray-300 focus:outline-none sm:text-base"
                     type="text"
                     placeholder="Search"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button className="ml-2 cursor-pointer text-gray-300 hover:text-white">
+                <Link
+                    to={`/search?q=${encodeURIComponent(searchTerm)}`}
+                    className="ml-2 cursor-pointer text-gray-300 hover:text-white"
+                >
                     <Search className="h-5 w-5" />
-                </button>
+                </Link>
             </div>
 
             <div className="flex shrink-0 items-center gap-4 text-sm whitespace-nowrap text-gray-200 md:gap-8 md:text-base">
