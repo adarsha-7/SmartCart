@@ -7,6 +7,7 @@ import Loading from './components/Loading'
 import NewProductPage from './components/NewProductPage'
 import Cart from './components/Cart'
 import ProductDetail from './components/ProductDetail'
+import UserProfile from './components/UserProfile'
 
 export default function App() {
     return (
@@ -20,6 +21,7 @@ export default function App() {
                 <Route path="/new-product" element={<NewProductPage />}></Route>
                 <Route path="/cart" element={<Cart />}></Route>
                 <Route path="/product/:id" element={<ProductDetail />}></Route>
+                <Route path="/user-profile" element={<UserProfile/>}></Route>
             </Routes>
         </>
     )
