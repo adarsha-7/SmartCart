@@ -51,15 +51,16 @@ model Product {
 }
 
 model TrendingProduct {
-  id      Int     @id
+  id      Int     @id @default(autoincrement())
   product Product @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model FeaturedProduct {
-  id        Int      @id
+  id        Int      @id @default(autoincrement())
   expiresAt DateTime
   product   Product  @relation(fields: [id], references: [id], onDelete: Cascade)
 }
+
 
 model Category {
   id            Int           @id

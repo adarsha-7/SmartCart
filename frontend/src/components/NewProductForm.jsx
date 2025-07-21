@@ -1,7 +1,29 @@
 import { Upload, X, Camera } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+
+import { categories, subcategories } from '../data/categories'
+
+const API_URL =
+    import.meta.env.VITE_ENV === 'development'
+        ? import.meta.env.VITE_API_URL_DEV
+        : import.meta.env.VITE_API_URL
 
 export default function NewProductForm() {
+    const [user, setUser] = useState({})
+
+    useEffect(() => {
+        axios
+            .get(`${API_URL}/api/auth/authentication-test`, {
+                withCredentials: true,
+            })
+            .then((res) => {
+                setUser(res.data.user)
+                console.log(res.data) /////////
+            })
+            .catch((err) => console.error(err))
+    }, [])
+
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -99,10 +121,36 @@ export default function NewProductForm() {
     const handleSubmit = () => {
         if (!validateForm()) return
 
-        console.log(`Publish listing:`, formData)
+        const form = new FormData() // Create a FormData object
 
-        // Here you would typically send data to your backend
-        alert(`Listing Published successfully!`)
+        // Append all non-file fields
+        form.append('title', formData.title)
+        form.append('category', formData.category)
+        form.append('subCategory', formData.subCategory)
+        form.append('price', formData.price)
+        form.append('condition', formData.condition)
+        form.append('description', formData.description)
+
+        // Append each image file individually
+        formData.images.forEach((image) => {
+            form.append('images', image) // 'images' is treated as an array by the backend
+        })
+
+        axios
+            .post(`${API_URL}/api/product/add-product`, form, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((res) => {
+                console.log(res.data.msg)
+                alert('Listing Published successfully!')
+            })
+            .catch((error) => {
+                console.error(error)
+                alert('Error Occurred! Could not publish listing.')
+            })
     }
 
     return (
@@ -161,31 +209,62 @@ export default function NewProductForm() {
                                         : 'border-gray-300'
                                 }`}
                             >
-                                <option value="" disabled>
-                                    Select a category
-                                </option>
-                                <option value="1">Electronics</option>
-                                <option value="2">Fashion</option>
-                                <option value="3">Home & Living</option>
-                                <option value="4">Sports</option>
-                                <option value="5">Books</option>
-                                <option value="6">
-                                    Beauty & Personal Care
-                                </option>
-                                <option value="7">Gaming</option>
-                                <option value="8">Toys & Baby Products</option>
-                                <option value="9">Groceries</option>
-                                <option value="10">Automotive & Tools</option>
-                                <option value="11">Health & Wellness</option>
-                                <option value="12">Music & Instruments</option>
-                                <option value="13">Office & Stationery</option>
-                                <option value="14">Pets & Animals</option>
-                                <option value="15">Travel & Outdoors</option>
                                 <option value="0">Other</option>
+                                {categories.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
                             </select>
                             {errors.category && (
                                 <p className="mt-1 text-xs text-red-500">
                                     {errors.category}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-gray-900">
+                                Subcategory{' '}
+                                <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                name="subCategory"
+                                value={formData.subCategory}
+                                onChange={handleInputChange}
+                                className={`w-full appearance-none rounded-md border bg-white px-3 py-2 ${
+                                    errors.subCategory
+                                        ? 'border-red-500'
+                                        : 'border-gray-300'
+                                }`}
+                                disabled={
+                                    formData.category === '' ||
+                                    formData.category === '0'
+                                }
+                            >
+                                <option value="0">Other</option>
+                                {formData.category !== '0' &&
+                                    subcategories
+                                        .filter((sub) => {
+                                            const categoryName =
+                                                categories.find(
+                                                    (cat) =>
+                                                        String(cat.id) ===
+                                                        String(
+                                                            formData.category
+                                                        )
+                                                )?.name
+                                            return sub.category === categoryName
+                                        })
+                                        .map((sub) => (
+                                            <option key={sub.id} value={sub.id}>
+                                                {sub.name}
+                                            </option>
+                                        ))}
+                            </select>
+                            {errors.subCategory && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {errors.subCategory}
                                 </p>
                             )}
                         </div>
@@ -233,6 +312,7 @@ export default function NewProductForm() {
                             </label>
                             <div className="space-y-2">
                                 {[
+                                    'Brand New',
                                     'Like New',
                                     'Very Good',
                                     'Good',

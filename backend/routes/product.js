@@ -1,11 +1,15 @@
 const express = require("express");
+const multer = require("multer");
 
 const { PrismaClient } = require("../generated/prisma");
 
 const authenticate = require("../middleware/authenticate");
+const uploadToCloudinary = require("../utils/uploadtocloud");
 
 const router = express.Router();
 const prisma = new PrismaClient();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.get("/", async (req, res) => {
     const productID = parseInt(req.query.id);
@@ -147,5 +151,61 @@ router.delete("/cart-item/delete", async (req, res) => {
         res.json({ success: false, error });
     }
 });
+
+router.post(
+    "/add-product",
+    authenticate,
+    upload.array("images"),
+    async (req, res) => {
+        try {
+            const {
+                title,
+                category,
+                subCategory,
+                price,
+                condition,
+                description,
+            } = req.body;
+            const files = req.files;
+
+            // Upload images to Cloudinary
+            const imageUploadPromises = files.map((file, index) => {
+                const filename = `${Date.now()}_${index}`;
+                return uploadToCloudinary(file.buffer, filename);
+            });
+
+            const imageUrls = await Promise.all(imageUploadPromises);
+
+            const newProduct = await prisma.product.create({
+                data: {
+                    userID: req.access_token_decoded.id,
+                    name: title,
+                    price: parseFloat(price),
+                    rating: 0,
+                    imageURL: imageUrls[0],
+                    description: description || null,
+                    categories: {
+                        connect: [{ id: parseInt(category) }],
+                    },
+                    subCategories: {
+                        connect: [{ id: parseInt(subCategory) }],
+                    },
+                },
+            });
+
+            console.log(newProduct);
+
+            return res.status(200).json({
+                success: true,
+                msg: "Product uploaded",
+            });
+        } catch (err) {
+            console.error("Error", err);
+            return res
+                .status(500)
+                .json({ success: false, error: "Upload failed" });
+        }
+    }
+);
 
 module.exports = router;
