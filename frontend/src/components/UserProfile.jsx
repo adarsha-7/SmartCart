@@ -1,67 +1,105 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import axios from 'axios'
+
+const API_URL =
+    import.meta.env.VITE_ENV == 'development'
+        ? import.meta.env.VITE_API_URL_DEV
+        : import.meta.env.VITE_API_URL
 
 function UserProfile() {
-  return (
-    <>
+    const [user, setUser] = useState({})
+    const [editingField, setEditingField] = useState(null)
+    const [editedUser, setEditedUser] = useState({})
 
-        <Navbar></Navbar>
+    useEffect(() => {
+        axios
+            .get(`${API_URL}/api/auth/authentication-test`, {
+                withCredentials: true,
+            })
+            .then((res) => {
+                setUser(res.data.user)
+                setEditedUser(res.data.user)
+            })
+            .catch((err) => console.error(err))
+    }, [])
 
-        <div className='bg-gray-100 flex flex-col justify-center items-center p-35'>
-            <div className='flex flex-col justify-center items-center'>
-                <p className='text-3xl font-bold m-2.5'>Profile Information</p>
-                <p className='text-gray-500'>Manage your personal information</p>
-                <div className='w-45 h-45 rounded-full mt-10 overflow-hidden'>
-                    <img src="../../public/images/loginpage_photo.jpg" className='w-full h-full object-cover'></img>
-                </div>
-                <button className='mt-5 bg-gray-200 p-2 text-gray-500 rounded-sm'><i class="fa-solid fa-pen"></i> Edit Photo</button>
+    const handleEdit = (field) => {
+        setEditingField(field)
+    }
+
+    const handleSave = () => {
+        // Implement saving logic here
+        setUser(editedUser)
+        setEditingField(null)
+    }
+
+    const handleChange = (field, value) => {
+        setEditedUser((prev) => ({ ...prev, [field]: value }))
+    }
+
+    const renderField = (label, field) => (
+        <div className="m-3 flex w-3xl items-center justify-between rounded-2xl bg-white p-5 shadow-md">
+            <div className="flex flex-col justify-between">
+                <p className="font-bold text-gray-600">{label}</p>
+                {editingField === field ? (
+                    <input
+                        type="text"
+                        value={editedUser[field] || ''}
+                        onChange={(e) => handleChange(field, e.target.value)}
+                        className="mt-1 rounded border border-gray-300 p-1 text-gray-700 focus:outline-none"
+                    />
+                ) : (
+                    <p className="text-gray-500">{user[field]}</p>
+                )}
             </div>
-
-            <div className='flex items-center justify-between m-3 bg-white w-3xl p-5 rounded-2xl shadow-md'>
-                
-                <div className='flex justify-between flex-col'>
-                    <p className='font-bold text-gray-600'>Full Name</p>
-                    <p className='text-gray-500'>John Doe</p>
-                </div>
-                <button className='text-gray-500'><i class="fa-solid fa-pen"></i></button>
-            </div>
-
-            <div className='flex items-center justify-between m-3 bg-white w-3xl p-5 rounded-2xl shadow-md'>
-                
-                <div className='flex justify-between flex-col'>
-                    <p className='font-bold text-gray-600'>Email Address</p>
-                    <p className='text-gray-500'>johndoe@gmail.com</p>
-                </div>
-                <button className='text-gray-500'><i class="fa-solid fa-pen"></i></button>
-            </div>
-
-            <div className='flex items-center justify-between m-3 bg-white w-3xl p-5 rounded-2xl shadow-md'>
-                
-                <div className='flex justify-between flex-col'>
-                    <p className='font-bold text-gray-600'>Phone Number</p>
-                    <p className='text-gray-500'>9087654321</p>
-                </div>
-                <button className='text-gray-500'><i class="fa-solid fa-pen"></i></button>
-            </div>
-
-            <div className='flex items-center justify-between m-3 bg-white w-3xl p-5 rounded-2xl shadow-md'>
-                
-                <div className='flex justify-between flex-col'>
-                    <p className='font-bold text-gray-600'>Address</p>
-                    <p className='text-gray-500'>28 Kilo, KU Gate</p>
-                </div>
-                <button className='text-gray-500'><i class="fa-solid fa-pen"></i></button>
-            </div>
-
-            
+            <button
+                className="text-gray-500"
+                onClick={() =>
+                    editingField === field ? handleSave() : handleEdit(field)
+                }
+            >
+                <i className="fa-solid fa-pen mr-1"></i>
+                {editingField === field ? 'Save' : 'Edit'}
+            </button>
         </div>
-                    
-            
-        <Footer/>
-         
-    </>
-  )
+    )
+
+    return (
+        <>
+            <Navbar />
+
+            <div className="mt-10 flex flex-col items-center justify-center bg-gray-100 p-10">
+                <div className="flex flex-col items-center justify-center">
+                    <p className="m-2.5 text-3xl font-bold">
+                        Profile Information
+                    </p>
+                    <p className="text-gray-500">
+                        Manage your personal information
+                    </p>
+                    <div className="mt-10 h-30 w-30 overflow-hidden rounded-full">
+                        <img
+                            src={user.image}
+                            alt="Profile"
+                            className="h-24 w-24 rounded-full object-cover"
+                        />
+                    </div>
+                    <button className="mt-5 rounded-sm bg-gray-200 p-2 text-gray-500">
+                        <i className="fa-solid fa-pen"></i> Edit Photo
+                    </button>
+                </div>
+
+                {renderField('First Name', 'first_name')}
+                {renderField('Last Name', 'last_name')}
+                {renderField('Email Address', 'email')}
+                {renderField('Phone Number', 'phone_number')}
+                {renderField('Address', 'address')}
+            </div>
+
+            <Footer />
+        </>
+    )
 }
 
 export default UserProfile

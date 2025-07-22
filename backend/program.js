@@ -1,19 +1,38 @@
 const { PrismaClient } = require("./generated/prisma");
+const data = require("./data");
 
 const prisma = new PrismaClient();
 
 async function program() {
-    const subcategoriesWithCategories = await prisma.subCategory.findMany({
-        select: {
-            name: true,
-            category: {
-                select: {
-                    name: true,
+    for (const item of data) {
+        const { productId, categoryIds, subCategoryIds } = item;
+
+        // Update product to clear and reconnect categories and subCategories
+        await prisma.product.update({
+            where: { id: productId },
+            data: {
+                categories: {
+                    set: [], // clear existing categories
+                    connect: categoryIds.map((id) => ({ id })),
+                },
+                subCategories: {
+                    set: [], // clear existing subCategories
+                    connect: subCategoryIds.map((id) => ({ id })),
                 },
             },
-        },
-    });
+        });
 
-    console.log(subcategoriesWithCategories);
+        console.log(`Updated product ${productId}`);
+    }
 }
-program();
+
+program()
+    .then(() => {
+        console.log("All products updated successfully.");
+    })
+    .catch((e) => {
+        console.error(e);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

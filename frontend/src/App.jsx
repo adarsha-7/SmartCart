@@ -22,7 +22,7 @@ export default function App() {
                 <Route path="/new-product" element={<NewProductPage />}></Route>
                 <Route path="/cart" element={<Cart />}></Route>
                 <Route path="/product/:id" element={<ProductDetail />}></Route>
-                <Route path="/user-profile" element={<UserProfile />}></Route>
+                <Route path="/profile" element={<UserProfile />}></Route>
                 <Route path="/search" element={<SearchResultPage />}></Route>
             </Routes>
         </>

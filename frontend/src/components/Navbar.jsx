@@ -22,9 +22,11 @@ export default function Navbar() {
                 withCredentials: true,
             })
             .then((res) => {
-                setLogin(res.data.success)
-                setUser(res.data.user)
-                setCartCount(res.data.user._count.CartItems)
+                if (res.data.success) {
+                    setLogin(res.data.success)
+                    setUser(res.data.user)
+                    setCartCount(res.data.user._count.CartItems)
+                }
             })
             .catch((err) => console.error(err))
     }, [login])

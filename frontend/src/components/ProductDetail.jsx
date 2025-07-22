@@ -25,7 +25,6 @@ export default function ProductDetail() {
             const p = res.data.product
             setProduct(p)
             setInCart(p.CartItems && p.CartItems.length > 0)
-            console.log(res.data.product)
         })
     }, [location])
 
