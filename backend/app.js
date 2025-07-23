@@ -40,6 +40,9 @@ app.use("/api/product", product);
 const search = require("./routes/search");
 app.use("/api/search", search);
 
+const user = require("./routes/user");
+app.use("/api/user", user);
+
 const run = async () => {
     app.listen(PORT, () => {
         console.log(`Server listening on http://localhost:${PORT}/api`);

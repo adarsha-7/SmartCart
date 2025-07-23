@@ -1,5 +1,5 @@
-import Navbar from './Navbar'
-import NewProductForm from './NewProductForm'
+import Navbar from '../components/Navbar'
+import NewProductForm from '../components/NewProductForm'
 
 export default function NewProductPage() {
     return (

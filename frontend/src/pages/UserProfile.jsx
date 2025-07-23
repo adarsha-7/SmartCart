@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import Navbar from './Navbar'
-import Footer from './Footer'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import axios from 'axios'
 
 const API_URL =
@@ -12,6 +12,7 @@ function UserProfile() {
     const [user, setUser] = useState({})
     const [editingField, setEditingField] = useState(null)
     const [editedUser, setEditedUser] = useState({})
+    const [isSaving, setIsSaving] = useState(false)
 
     useEffect(() => {
         axios
@@ -29,10 +30,35 @@ function UserProfile() {
         setEditingField(field)
     }
 
-    const handleSave = () => {
-        // Implement saving logic here
-        setUser(editedUser)
-        setEditingField(null)
+    const handleSave = async () => {
+        setIsSaving(true)
+
+        try {
+            const userData = {
+                first_name: editedUser.first_name,
+                last_name: editedUser.last_name,
+                email: editedUser.email,
+                phone_number: editedUser.phone_number,
+                address: editedUser.address,
+            }
+
+            const response = await axios.patch(
+                `${API_URL}/api/user/profile`,
+                userData,
+                {
+                    withCredentials: true,
+                }
+            )
+
+            setUser(editedUser)
+            setEditingField(null)
+
+            console.log('Profile updated successfully')
+        } catch (error) {
+            console.error('Error saving profile:', error)
+        } finally {
+            setIsSaving(false)
+        }
     }
 
     const handleChange = (field, value) => {
@@ -49,19 +75,27 @@ function UserProfile() {
                         value={editedUser[field] || ''}
                         onChange={(e) => handleChange(field, e.target.value)}
                         className="mt-1 rounded border border-gray-300 p-1 text-gray-700 focus:outline-none"
+                        disabled={isSaving}
                     />
                 ) : (
                     <p className="text-gray-500">{user[field]}</p>
                 )}
             </div>
             <button
-                className="text-gray-500"
+                className={`text-gray-500 ${isSaving ? 'cursor-not-allowed opacity-50' : ''}`}
                 onClick={() =>
                     editingField === field ? handleSave() : handleEdit(field)
                 }
+                disabled={isSaving}
             >
-                <i className="fa-solid fa-pen mr-1"></i>
-                {editingField === field ? 'Save' : 'Edit'}
+                <i
+                    className={`fa-solid ${editingField === field ? (isSaving ? 'fa-spinner fa-spin' : 'fa-check') : 'fa-pen'} mr-1`}
+                ></i>
+                {editingField === field
+                    ? isSaving
+                        ? 'Saving...'
+                        : 'Save'
+                    : 'Edit'}
             </button>
         </div>
     )
@@ -78,7 +112,7 @@ function UserProfile() {
                     <p className="text-gray-500">
                         Manage your personal information
                     </p>
-                    <div className="mt-10 h-30 w-30 overflow-hidden rounded-full">
+                    <div className="mt-10">
                         <img
                             src={user.image}
                             alt="Profile"

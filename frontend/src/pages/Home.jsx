@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import Navbar from './Navbar'
-import Footer from './Footer'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
-import TrendingProducts from './TrendingProducts'
-import FeaturedProducts from './FeaturedProducts'
-import OtherProducts1 from './OtherProducts1'
-import OtherProducts2 from './OtherProducts2'
-import Category from './Category'
+import TrendingProducts from '../components/TrendingProducts'
+import FeaturedProducts from '../components/FeaturedProducts'
+import OtherProducts1 from '../components/OtherProducts1'
+import OtherProducts2 from '../components/OtherProducts2'
+import Category from '../components/Category'
 
 const API_URL =
     import.meta.env.VITE_ENV === 'development'
