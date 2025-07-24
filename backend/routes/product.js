@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const { PrismaClient } = require("../generated/prisma");
+const { getProductRecommendations } = require("../services/recommendCore");
 
 const authenticate = require("../middleware/authenticate");
 const uploadToCloudinary = require("../utils/uploadtocloud");
@@ -43,6 +44,75 @@ router.get("/", async (req, res) => {
         }
 
         res.json({ product });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+/**
+ * Enhanced product endpoint with recommendations
+ */
+router.get("/with-recommendations", async (req, res) => {
+    const productID = parseInt(req.query.id);
+    const userID = req.query.userID;
+    const includeRecommendations = req.query.recommendations !== 'false';
+    const recommendationLimit = parseInt(req.query.recommendationLimit) || 10;
+
+    if (!productID) {
+        return res.status(400).json({ error: "Product ID is required" });
+    }
+
+    try {
+        // Fetch product details
+        const product = await prisma.product.findUnique({
+            where: { id: productID },
+            include: {
+                featuredProduct: true,
+                trendingProduct: true,
+                user: true,
+                categories: true,
+                subCategories: true,
+                CartItems: userID
+                    ? {
+                          where: {
+                              userId: userID,
+                          },
+                      }
+                    : true,
+            },
+        });
+
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        let recommendations = [];
+        
+        // Fetch recommendations if requested
+        if (includeRecommendations) {
+            try {
+                recommendations = await getProductRecommendations(
+                    productID, 
+                    recommendationLimit, 
+                    0.05
+                );
+                console.log(`Fetched ${recommendations.length} recommendations for product ${productID}`);
+            } catch (error) {
+                console.error('Error fetching recommendations:', error);
+                // Don't fail the entire request if recommendations fail
+                recommendations = [];
+            }
+        }
+
+        res.json({ 
+            product,
+            recommendations: {
+                items: recommendations,
+                total: recommendations.length,
+                requested: includeRecommendations
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
@@ -198,6 +268,7 @@ router.post(
             return res.status(200).json({
                 success: true,
                 msg: "Product uploaded",
+                productId: newProduct.id
             });
         } catch (err) {
             console.error("Error", err);
@@ -207,5 +278,40 @@ router.post(
         }
     }
 );
+
+/**
+ * Get similar products for a given product (simple version)
+ */
+router.get("/:productId/similar", async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const limit = parseInt(req.query.limit) || 8;
+        
+        if (!productId || isNaN(parseInt(productId))) {
+            return res.status(400).json({ 
+                error: "Valid product ID is required"
+            });
+        }
+
+        const recommendations = await getProductRecommendations(
+            productId, 
+            limit, 
+            0.05
+        );
+
+        res.json({
+            productId: parseInt(productId),
+            similarProducts: recommendations,
+            total: recommendations.length
+        });
+
+    } catch (error) {
+        console.error('Similar products error:', error);
+        res.status(500).json({ 
+            error: "Failed to fetch similar products",
+            similarProducts: []
+        });
+    }
+});
 
 module.exports = router;
