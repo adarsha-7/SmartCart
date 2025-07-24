@@ -84,4 +84,71 @@ router.patch(
     }
 );
 
+router.get("/dashboard", authenticate, async (req, res) => {
+    try {
+        const userId = req.access_token_decoded.id;
+
+        const listings = await prisma.product.findMany({
+            where: {
+                userID: userId,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                rating: true,
+                imageURL: true,
+                quantitySold: true,
+                createdAt: true,
+            },
+        });
+
+        const orders = await prisma.order.findMany({
+            where: {
+                userId: userId,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                id: true,
+                quantity: true,
+                createdAt: true,
+                product: {
+                    select: {
+                        id: true,
+                        name: true,
+                        price: true,
+                        rating: true,
+                        imageURL: true,
+                    },
+                },
+            },
+        });
+
+        const formattedOrders = orders.map((order) => ({
+            ...order.product,
+            quantity: order.quantity,
+            orderedAt: order.createdAt,
+            orderId: order.id,
+        }));
+
+        res.json({
+            success: true,
+            listings: listings,
+            orders: formattedOrders,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            msg: "Internal server error",
+            error: error.message,
+        });
+    }
+});
+
 module.exports = router;

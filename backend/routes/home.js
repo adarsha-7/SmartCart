@@ -6,22 +6,28 @@ const prisma = new PrismaClient();
 
 router.get("/content", async (req, res) => {
     try {
-        const [categories, trendingProducts, featuredProducts] = await Promise.all([
-            prisma.category.findMany().catch(() => []),
-            prisma.trendingProduct.findMany({ include: { product: true } }).catch(() => []),
-            prisma.featuredProduct.findMany({ include: { product: true } }).catch(() => []),
-        ]);
+        const [categories, trendingProducts, featuredProducts] =
+            await Promise.all([
+                prisma.category.findMany().catch(() => []),
+                prisma.trendingProduct
+                    .findMany({ include: { product: true } })
+                    .catch(() => []),
+                prisma.featuredProduct
+                    .findMany({ include: { product: true } })
+                    .catch(() => []),
+            ]);
 
-        const otherProducts = await prisma.product.findMany({
-            take: 40,
-            orderBy: { createdAt: 'desc' }
-        }).catch(() => []);
+        const otherProducts = await prisma.$queryRaw`
+            SELECT * FROM "Product"
+            ORDER BY RANDOM()
+            LIMIT 40
+        `.catch(() => []);
 
         res.json({
             categories,
-            trendingProducts, 
+            trendingProducts,
             featuredProducts,
-            otherProducts
+            otherProducts,
         });
     } catch (error) {
         console.error(error);
@@ -29,7 +35,7 @@ router.get("/content", async (req, res) => {
             categories: [],
             trendingProducts: [],
             featuredProducts: [],
-            otherProducts: []
+            otherProducts: [],
         });
     }
 });

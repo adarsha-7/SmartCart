@@ -315,4 +315,65 @@ router.get("/:productId/similar", async (req, res) => {
     }
 });
 
+router.patch("/edit-price", authenticate, async (req, res) => {
+    try {
+        const userId = req.access_token_decoded.id;
+        const { id, price } = req.body;
+
+        if (!id || price === undefined) {
+            return res
+                .status(400)
+                .json({ error: "Missing product id or price" });
+        }
+        if (typeof price !== "number" || price < 0) {
+            return res.status(400).json({ error: "Invalid price" });
+        }
+
+        const product = await prisma.product.findUnique({ where: { id } });
+        if (!product || product.userID !== userId) {
+            return res
+                .status(403)
+                .json({ error: "Unauthorized to edit this product" });
+        }
+
+        const updatedProduct = await prisma.product.update({
+            where: { id },
+            data: { price },
+        });
+
+        res.json({
+            msg: "Price updated successfully",
+            product: updatedProduct,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to update price" });
+    }
+});
+
+router.delete("/delete", authenticate, async (req, res) => {
+    try {
+        const userId = req.access_token_decoded.id;
+        const id = parseInt(req.query.id);
+
+        if (!id) {
+            return res.status(400).json({ error: "Missing product id" });
+        }
+
+        const product = await prisma.product.findUnique({ where: { id } });
+        if (!product || product.userID !== userId) {
+            return res
+                .status(403)
+                .json({ error: "Unauthorized to delete this product" });
+        }
+
+        await prisma.product.delete({ where: { id } });
+
+        res.json({ msg: "Product deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to delete product" });
+    }
+});
+
 module.exports = router;

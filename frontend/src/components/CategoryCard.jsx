@@ -1,10 +1,14 @@
 import * as Icons from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function CategoryCard({ name, icon, image }) {
     const IconComponent = Icons[icon] || Icons.HelpCircle
 
     return (
-        <div className="relative h-55 w-40 flex-shrink-0 cursor-pointer overflow-hidden rounded-xl shadow-md transition-transform duration-300 hover:scale-110">
+        <Link
+            to={`/search?q=${encodeURIComponent(name)}`}
+            className="relative h-55 w-40 flex-shrink-0 overflow-hidden rounded-xl shadow-md transition-transform duration-300 hover:scale-110"
+        >
             <img
                 src={image}
                 alt={name}
@@ -14,6 +18,6 @@ export default function CategoryCard({ name, icon, image }) {
                 <IconComponent size={24} className="mb-1 text-white" />
                 <p className="text-sm font-medium">{name}</p>
             </div>
-        </div>
+        </Link>
     )
 }

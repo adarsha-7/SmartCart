@@ -54,7 +54,7 @@ export default function TrendingProducts({ products }) {
 
     return (
         <div className="mb-5 flex h-90 flex-col gap-5 bg-white px-5 pt-10 xl:px-50">
-            <h2 className="text-2xl font-normal">Trending Now</h2>
+            <h2 className="text-2xl font-normal">Listed Products</h2>
 
             <div className="relative">
                 <div

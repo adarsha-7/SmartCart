@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import SellerDashboard from '../components/SellerDashboard'
 import axios from 'axios'
 
 const API_URL =
@@ -191,6 +192,8 @@ function UserProfile() {
                 {renderField('Email Address', 'email')}
                 {renderField('Phone Number', 'phone_number')}
                 {renderField('Address', 'address')}
+
+                <SellerDashboard first_name={user.first_name} />
             </div>
 
             <Footer />
