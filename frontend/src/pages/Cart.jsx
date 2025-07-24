@@ -1,6 +1,6 @@
-import Navbar from './Navbar'
-import CartItem from './CartItem'
-import OrderCalculator from './OrderCalculator'
+import Navbar from '../components/Navbar'
+import CartItem from '../components/CartItem'
+import OrderCalculator from '../components/OrderCalculator'
 import { useState, useEffect } from 'react'
 
 import axios from 'axios'

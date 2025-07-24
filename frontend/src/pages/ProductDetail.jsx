@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { useParams, useLocation } from 'react-router-dom'
 import { CheckCircle, Eye, Flame, ShoppingCart } from 'lucide-react'
 import axios from 'axios'
-import Navbar from './Navbar'
-import Footer from './Footer'
-import RecommendedProducts from './RecommendedProducts'
-import SimilarProducts from './SimilarProducts'
-import Category from './Category'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import OtherProducts1 from '../components/OtherProducts1'
+import OtherProducts2 from '../components/OtherProducts2'
+import Category from '../components/Category'
 
 const API_URL =
     import.meta.env.VITE_ENV == 'development'
@@ -31,7 +31,6 @@ export default function ProductDetail() {
             const p = res.data.product
             setProduct(p)
             setInCart(p.CartItems && p.CartItems.length > 0)
-            console.log(res.data.product)
         })
     }, [location, id])
 

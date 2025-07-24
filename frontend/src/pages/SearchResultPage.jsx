@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
-import Navbar from './Navbar'
-import ProductGrid from './ProductGrid'
+import Navbar from '../components/Navbar'
+import ProductGrid from '../components/ProductGrid'
 
 const API_URL =
     import.meta.env.VITE_ENV === 'development'

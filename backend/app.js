@@ -40,8 +40,13 @@ app.use("/api/product", product);
 const search = require("./routes/search");
 app.use("/api/search", search);
 
+<<<<<<< HEAD
 const recommend = require("./routes/recommend");
 app.use("/api/recommend", recommend);
+=======
+const user = require("./routes/user");
+app.use("/api/user", user);
+>>>>>>> 8cf8ff189fb9662014279e57476e4c26ad77de91
 
 const run = async () => {
     app.listen(PORT, () => {
