@@ -4,8 +4,8 @@ import { CheckCircle, Eye, Flame, ShoppingCart } from 'lucide-react'
 import axios from 'axios'
 import Navbar from './Navbar'
 import Footer from './Footer'
-import OtherProducts1 from './OtherProducts1'
-import OtherProducts2 from './OtherProducts2'
+import RecommendedProducts from './RecommendedProducts'
+import SimilarProducts from './SimilarProducts'
 import Category from './Category'
 
 const API_URL =
@@ -16,10 +16,16 @@ const API_URL =
 export default function ProductDetail() {
     const [product, setProduct] = useState({})
     const [inCart, setInCart] = useState(false)
+    const [login, setLogin] = useState(false)
+    const [message, setMessage] = useState('')
+    const [data, setData] = useState({
+        categories: [],
+    })
 
     const { id } = useParams()
-
     const location = useLocation()
+
+    // Fetch product details
     useEffect(() => {
         axios.get(`${API_URL}/api/product?id=${id}`).then((res) => {
             const p = res.data.product
@@ -27,12 +33,9 @@ export default function ProductDetail() {
             setInCart(p.CartItems && p.CartItems.length > 0)
             console.log(res.data.product)
         })
-    }, [location])
+    }, [location, id])
 
-    //determine if user is logged in or not, if yes, give "add to cart" option
-
-    const [login, setLogin] = useState(false)
-
+    // Check authentication status
     useEffect(() => {
         axios
             .get(`${API_URL}/api/auth/authentication-test`, {
@@ -44,19 +47,10 @@ export default function ProductDetail() {
             .catch((err) => console.error(err))
     }, [])
 
-    // function for "add to cart" functionality
-
-    const [message, setMessage] = useState('')
-
-    const [data, setData] = useState({
-        trendingProducts: [],
-        featuredProducts: [],
-        otherProducts: [],
-        categories: [],
-    })
+    // Fetch categories for footer
     useEffect(() => {
         axios.get(`${API_URL}/api/home/content`).then((res) => {
-            setData(res.data)
+            setData({ categories: res.data.categories })
         })
     }, [])
 
@@ -70,6 +64,7 @@ export default function ProductDetail() {
             .then((res) => {
                 if (res.data.success) {
                     setMessage('Product added to Cart Successfully')
+                    setInCart(true)
                     setTimeout(() => {
                         setMessage('')
                     }, 5000)
@@ -80,7 +75,13 @@ export default function ProductDetail() {
                     }, 5000)
                 }
             })
-            .catch((error) => console.error(error))
+            .catch((error) => {
+                console.error(error)
+                setMessage('Failed to add product to cart')
+                setTimeout(() => {
+                    setMessage('')
+                }, 5000)
+            })
     }
 
     const { name, price, imageURL, rating, description } = product
@@ -182,32 +183,57 @@ export default function ProductDetail() {
 
                         <div className="flex flex-wrap gap-4">
                             {login && (
-                                <button className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
+                                <button className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 transition-colors">
                                     Buy Now
                                 </button>
                             )}
-                            {login && (
+                            {login && !inCart && (
                                 <button
                                     onClick={handleAddToCart}
-                                    className="cursor-pointer rounded bg-black px-6 py-2 text-white hover:bg-gray-800"
+                                    className="flex items-center gap-2 cursor-pointer rounded bg-black px-6 py-2 text-white hover:bg-gray-800 transition-colors"
                                 >
+                                    <ShoppingCart className="h-4 w-4" />
                                     Add to Cart
+                                </button>
+                            )}
+                            {login && inCart && (
+                                <button
+                                    disabled
+                                    className="flex items-center gap-2 cursor-not-allowed rounded bg-green-600 px-6 py-2 text-white"
+                                >
+                                    <CheckCircle className="h-4 w-4" />
+                                    In Cart
                                 </button>
                             )}
                         </div>
 
                         {message && (
-                            <p className="mt-4 text-sm text-red-500">
+                            <div className={`mt-4 p-3 rounded text-sm ${
+                                message.includes('Successfully') 
+                                    ? 'bg-green-100 text-green-700 border border-green-200' 
+                                    : 'bg-red-100 text-red-700 border border-red-200'
+                            }`}>
                                 {message}
-                            </p>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
 
-            <div className="mt-10">
-                <OtherProducts1 products={data.otherProducts.slice(0, 20)} />
-                <OtherProducts2 products={data.otherProducts.slice(20, 40)} />
+            {/* AI-Powered Recommendations Section */}
+            <div className="mt-12">
+                <RecommendedProducts 
+                    productId={id} 
+                    title="Recommended for You"
+                />
+                
+                {/* You might also like section with different algorithm */}
+                <SimilarProducts 
+                    productId={id} 
+                    title="You might also like"
+                />
+                
+                {/* Categories for general browsing */}
                 <Category categories={data.categories} />
             </div>
 
