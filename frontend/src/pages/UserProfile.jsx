@@ -65,6 +65,39 @@ function UserProfile() {
         setEditedUser((prev) => ({ ...prev, [field]: value }))
     }
 
+    //picture change
+    const [selectedImage, setSelectedImage] = useState(null)
+    const [isUploadingImage, setIsUploadingImage] = useState(false)
+
+    const uploadImage = async () => {
+        if (!selectedImage) return
+
+        setIsUploadingImage(true)
+
+        try {
+            const formData = new FormData()
+            formData.append('image', selectedImage)
+
+            const response = await axios.patch(
+                `${API_URL}/api/user/profile/image`,
+                formData,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            )
+
+            setUser((prev) => ({ ...prev, image: response.data.image }))
+            setSelectedImage(null)
+        } catch (error) {
+            console.error('Error uploading image:', error)
+        } finally {
+            setIsUploadingImage(false)
+        }
+    }
+
     const renderField = (label, field) => (
         <div className="m-3 flex w-3xl items-center justify-between rounded-2xl bg-white p-5 shadow-md">
             <div className="flex flex-col justify-between">
@@ -112,16 +145,45 @@ function UserProfile() {
                     <p className="text-gray-500">
                         Manage your personal information
                     </p>
-                    <div className="mt-10">
+                    <div className="mt-10 flex flex-col items-center">
                         <img
-                            src={user.image}
+                            src={
+                                selectedImage
+                                    ? URL.createObjectURL(selectedImage)
+                                    : user.image
+                            }
                             alt="Profile"
                             className="h-24 w-24 rounded-full object-cover"
                         />
+
+                        <input
+                            type="file"
+                            id="imageUpload"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={(e) =>
+                                setSelectedImage(e.target.files[0])
+                            }
+                            disabled={isUploadingImage}
+                        />
+
+                        <label
+                            htmlFor="imageUpload"
+                            className="mt-5 cursor-pointer rounded-sm bg-gray-200 p-2 text-gray-500 hover:bg-gray-300"
+                        >
+                            <i className="fa-solid fa-pen mr-1"></i>
+                            {isUploadingImage ? 'Uploading...' : 'Edit Photo'}
+                        </label>
+
+                        {selectedImage && !isUploadingImage && (
+                            <button
+                                className="mt-3 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                onClick={uploadImage}
+                            >
+                                Save Photo
+                            </button>
+                        )}
                     </div>
-                    <button className="mt-5 rounded-sm bg-gray-200 p-2 text-gray-500">
-                        <i className="fa-solid fa-pen"></i> Edit Photo
-                    </button>
                 </div>
 
                 {renderField('First Name', 'first_name')}

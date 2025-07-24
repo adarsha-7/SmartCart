@@ -1,11 +1,15 @@
 const express = require("express");
+const multer = require("multer");
 
 const { PrismaClient } = require("../generated/prisma");
 
 const authenticate = require("../middleware/authenticate");
+const uploadToCloudinary = require("../utils/uploadtocloud");
 
 const router = express.Router();
 const prisma = new PrismaClient();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.patch("/profile", authenticate, async (req, res) => {
     try {
@@ -43,5 +47,41 @@ router.patch("/profile", authenticate, async (req, res) => {
         res.status(500).json({ error: "Update failed" });
     }
 });
+
+router.patch(
+    "/profile/image",
+    authenticate,
+    upload.single("image"),
+    async (req, res) => {
+        try {
+            const id = req.access_token_decoded.id;
+
+            if (!req.file) {
+                return res.status(400).json({ error: "No image uploaded" });
+            }
+
+            const filename = `profile_${Date.now()}`;
+            const uploaded = await uploadToCloudinary(
+                req.file.buffer,
+                filename,
+                "profile"
+            );
+
+            const updatedUser = await prisma.user.update({
+                where: { id },
+                data: { image: uploaded },
+            });
+
+            res.json({
+                msg: "Profile image updated successfully",
+                image: uploaded,
+                user: updatedUser,
+            });
+        } catch (error) {
+            console.error("Image upload error:", error);
+            res.status(500).json({ error: "Image upload failed" });
+        }
+    }
+);
 
 module.exports = router;

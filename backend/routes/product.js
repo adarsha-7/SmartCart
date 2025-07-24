@@ -56,7 +56,7 @@ router.get("/", async (req, res) => {
 router.get("/with-recommendations", async (req, res) => {
     const productID = parseInt(req.query.id);
     const userID = req.query.userID;
-    const includeRecommendations = req.query.recommendations !== 'false';
+    const includeRecommendations = req.query.recommendations !== "false";
     const recommendationLimit = parseInt(req.query.recommendationLimit) || 10;
 
     if (!productID) {
@@ -88,30 +88,32 @@ router.get("/with-recommendations", async (req, res) => {
         }
 
         let recommendations = [];
-        
+
         // Fetch recommendations if requested
         if (includeRecommendations) {
             try {
                 recommendations = await getProductRecommendations(
-                    productID, 
-                    recommendationLimit, 
+                    productID,
+                    recommendationLimit,
                     0.05
                 );
-                console.log(`Fetched ${recommendations.length} recommendations for product ${productID}`);
+                console.log(
+                    `Fetched ${recommendations.length} recommendations for product ${productID}`
+                );
             } catch (error) {
-                console.error('Error fetching recommendations:', error);
+                console.error("Error fetching recommendations:", error);
                 // Don't fail the entire request if recommendations fail
                 recommendations = [];
             }
         }
 
-        res.json({ 
+        res.json({
             product,
             recommendations: {
                 items: recommendations,
                 total: recommendations.length,
-                requested: includeRecommendations
-            }
+                requested: includeRecommendations,
+            },
         });
     } catch (error) {
         console.error(error);
@@ -241,7 +243,7 @@ router.post(
             // Upload images to Cloudinary
             const imageUploadPromises = files.map((file, index) => {
                 const filename = `${Date.now()}_${index}`;
-                return uploadToCloudinary(file.buffer, filename);
+                return uploadToCloudinary(file.buffer, filename, "product");
             });
 
             const imageUrls = await Promise.all(imageUploadPromises);
@@ -268,7 +270,7 @@ router.post(
             return res.status(200).json({
                 success: true,
                 msg: "Product uploaded",
-                productId: newProduct.id
+                productId: newProduct.id,
             });
         } catch (err) {
             console.error("Error", err);
@@ -286,30 +288,29 @@ router.get("/:productId/similar", async (req, res) => {
     try {
         const { productId } = req.params;
         const limit = parseInt(req.query.limit) || 8;
-        
+
         if (!productId || isNaN(parseInt(productId))) {
-            return res.status(400).json({ 
-                error: "Valid product ID is required"
+            return res.status(400).json({
+                error: "Valid product ID is required",
             });
         }
 
         const recommendations = await getProductRecommendations(
-            productId, 
-            limit, 
+            productId,
+            limit,
             0.05
         );
 
         res.json({
             productId: parseInt(productId),
             similarProducts: recommendations,
-            total: recommendations.length
+            total: recommendations.length,
         });
-
     } catch (error) {
-        console.error('Similar products error:', error);
-        res.status(500).json({ 
+        console.error("Similar products error:", error);
+        res.status(500).json({
             error: "Failed to fetch similar products",
-            similarProducts: []
+            similarProducts: [],
         });
     }
 });
