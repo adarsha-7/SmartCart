@@ -4,9 +4,9 @@ import { CheckCircle, Eye, Flame, ShoppingCart } from 'lucide-react'
 import axios from 'axios'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import OtherProducts1 from '../components/OtherProducts1'
-import OtherProducts2 from '../components/OtherProducts2'
 import Category from '../components/Category'
+import RecommendedProducts from '../components/RecommendedProducts'
+import SimilarProducts from '../components/SimilarProducts'
 
 const API_URL =
     import.meta.env.VITE_ENV == 'development'
