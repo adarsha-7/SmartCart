@@ -9,6 +9,7 @@ import Cart from './pages/Cart'
 import ProductDetail from './pages/ProductDetail'
 import UserProfile from './pages/UserProfile'
 import SearchResultPage from './pages/SearchResultPage'
+import CheckoutPage from './components/CheckoutPage'
 
 export default function App() {
     return (
@@ -24,6 +25,7 @@ export default function App() {
                 <Route path="/product/:id" element={<ProductDetail />}></Route>
                 <Route path="/profile" element={<UserProfile />}></Route>
                 <Route path="/search" element={<SearchResultPage />}></Route>
+                <Route path="/checkout" element={<CheckoutPage/>}></Route>
             </Routes>
         </>
     )
