@@ -46,7 +46,7 @@ router.post("/", authenticate, async (req, res) => {
         });
 
         const buyerMailMessage = `
-Hello ${user.first_name} ${user.last_name},
+Hello ${user.first_name || ""} ${user.last_name || ""},
 
 Your order has been successfully placed for:
 
@@ -154,7 +154,9 @@ router.patch("/confirmation", authenticate, async (req, res) => {
             },
         });
 
-        return res.json({ msg: "Your order confirmation has been received." });
+        return res.json({
+            msg: "Your order confirmation has been received. Please check your email for more information.",
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ msg: "Something went wrong." });

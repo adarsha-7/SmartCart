@@ -1,6 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { Search, User, ShoppingCart, Plus, X, Clock, TrendingUp } from 'lucide-react'
+import {
+    Search,
+    User,
+    ShoppingCart,
+    Plus,
+    X,
+    Clock,
+    TrendingUp,
+} from 'lucide-react'
 import axios from 'axios'
 
 const API_URL =
@@ -13,13 +21,13 @@ export default function Navbar() {
     const [searchTerm, setSearchTerm] = useState('')
     const [user, setUser] = useState({})
     const [cartCount, setCartCount] = useState(0)
-    
+
     // Search suggestions state
     const [suggestions, setSuggestions] = useState([])
     const [showSuggestions, setShowSuggestions] = useState(false)
     const [popularSearches, setPopularSearches] = useState([])
     const [recentSearches, setRecentSearches] = useState([])
-    
+
     const searchRef = useRef(null)
     const suggestionsRef = useRef(null)
     const navigate = useNavigate()
@@ -41,24 +49,32 @@ export default function Navbar() {
 
     // Load recent searches from localStorage
     useEffect(() => {
-        const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]')
+        const recent = JSON.parse(
+            localStorage.getItem('recentSearches') || '[]'
+        )
         setRecentSearches(recent.slice(0, 5))
     }, [])
 
     // Load popular searches
     useEffect(() => {
-        axios.get(`${API_URL}/api/search/popular`)
-            .then(res => setPopularSearches(res.data.popularSearches || []))
-            .catch(err => console.error('Error loading popular searches:', err))
+        axios
+            .get(`${API_URL}/api/search/popular`)
+            .then((res) => setPopularSearches(res.data.popularSearches || []))
+            .catch((err) =>
+                console.error('Error loading popular searches:', err)
+            )
     }, [])
 
     // Fetch suggestions as user types
     useEffect(() => {
         if (searchTerm.length >= 2) {
             const timeoutId = setTimeout(() => {
-                axios.get(`${API_URL}/api/search/suggestions?q=${encodeURIComponent(searchTerm)}`)
-                    .then(res => setSuggestions(res.data.suggestions || []))
-                    .catch(err => {
+                axios
+                    .get(
+                        `${API_URL}/api/search/suggestions?q=${encodeURIComponent(searchTerm)}`
+                    )
+                    .then((res) => setSuggestions(res.data.suggestions || []))
+                    .catch((err) => {
                         console.error('Error fetching suggestions:', err)
                         setSuggestions([])
                     })
@@ -73,14 +89,19 @@ export default function Navbar() {
     // Handle clicks outside search box
     useEffect(() => {
         function handleClickOutside(event) {
-            if (searchRef.current && !searchRef.current.contains(event.target) &&
-                suggestionsRef.current && !suggestionsRef.current.contains(event.target)) {
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(event.target) &&
+                suggestionsRef.current &&
+                !suggestionsRef.current.contains(event.target)
+            ) {
                 setShowSuggestions(false)
             }
         }
 
         document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
     function logout() {
@@ -88,7 +109,7 @@ export default function Navbar() {
             .post(`${API_URL}/api/logout`, {}, { withCredentials: true })
             .then((res) => {
                 if (res.data.success) {
-                    window.location.reload()
+                    window.location.href = '/'
                 } else {
                     console.log('Logout Fail.')
                 }
@@ -99,11 +120,16 @@ export default function Navbar() {
     function handleSearch(query) {
         if (query.trim()) {
             // Add to recent searches
-            const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]')
-            const newRecent = [query, ...recent.filter(s => s !== query)].slice(0, 10)
+            const recent = JSON.parse(
+                localStorage.getItem('recentSearches') || '[]'
+            )
+            const newRecent = [
+                query,
+                ...recent.filter((s) => s !== query),
+            ].slice(0, 10)
             localStorage.setItem('recentSearches', JSON.stringify(newRecent))
             setRecentSearches(newRecent.slice(0, 5))
-            
+
             // Navigate to search results
             navigate(`/search?q=${encodeURIComponent(query)}`)
             setShowSuggestions(false)
@@ -125,8 +151,10 @@ export default function Navbar() {
     }
 
     function removeRecentSearch(searchToRemove) {
-        const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]')
-        const filtered = recent.filter(s => s !== searchToRemove)
+        const recent = JSON.parse(
+            localStorage.getItem('recentSearches') || '[]'
+        )
+        const filtered = recent.filter((s) => s !== searchToRemove)
         localStorage.setItem('recentSearches', JSON.stringify(filtered))
         setRecentSearches(filtered.slice(0, 5))
     }
@@ -151,8 +179,8 @@ export default function Navbar() {
             </div>
 
             {/* Enhanced Search Box */}
-            <div className="mx-4 flex max-w-2xl min-w-0 flex-1 relative">
-                <div 
+            <div className="relative mx-4 flex max-w-2xl min-w-0 flex-1">
+                <div
                     ref={searchRef}
                     className="flex w-full items-center overflow-hidden rounded-3xl border border-gray-600 bg-gray-700 px-4 focus-within:border-white"
                 >
@@ -175,76 +203,98 @@ export default function Navbar() {
 
                 {/* Search Suggestions Dropdown */}
                 {showSuggestions && (
-                    <div 
+                    <div
                         ref={suggestionsRef}
-                        className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-30"
+                        className="absolute top-full right-0 left-0 z-30 mt-1 max-h-96 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
                     >
                         {/* Recent Searches */}
-                        {searchTerm.length === 0 && recentSearches.length > 0 && (
-                            <div className="p-3">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                                        <Clock className="w-4 h-4" />
-                                        Recent searches
-                                    </h3>
-                                    <button 
-                                        onClick={clearRecentSearches}
-                                        className="text-xs text-gray-500 hover:text-gray-700"
-                                    >
-                                        Clear all
-                                    </button>
-                                </div>
-                                {recentSearches.map((search, index) => (
-                                    <div 
-                                        key={index} 
-                                        className="flex items-center justify-between group py-1 px-2 hover:bg-gray-50 rounded cursor-pointer"
-                                        onClick={() => handleSuggestionClick(search)}
-                                    >
-                                        <span className="text-sm text-gray-700">{search}</span>
+                        {searchTerm.length === 0 &&
+                            recentSearches.length > 0 && (
+                                <div className="p-3">
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <h3 className="flex items-center gap-1 text-sm font-medium text-gray-700">
+                                            <Clock className="h-4 w-4" />
+                                            Recent searches
+                                        </h3>
                                         <button
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                removeRecentSearch(search)
-                                            }}
-                                            className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600"
+                                            onClick={clearRecentSearches}
+                                            className="text-xs text-gray-500 hover:text-gray-700"
                                         >
-                                            <X className="w-3 h-3" />
+                                            Clear all
                                         </button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    {recentSearches.map((search, index) => (
+                                        <div
+                                            key={index}
+                                            className="group flex cursor-pointer items-center justify-between rounded px-2 py-1 hover:bg-gray-50"
+                                            onClick={() =>
+                                                handleSuggestionClick(search)
+                                            }
+                                        >
+                                            <span className="text-sm text-gray-700">
+                                                {search}
+                                            </span>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    removeRecentSearch(search)
+                                                }}
+                                                className="text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                         {/* Popular Searches */}
-                        {searchTerm.length === 0 && popularSearches.length > 0 && (
-                            <div className="p-3 border-t border-gray-100">
-                                <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
-                                    <TrendingUp className="w-4 h-4" />
-                                    Popular searches
-                                </h3>
-                                {popularSearches.slice(0, 6).map((search, index) => (
-                                    <div 
-                                        key={index} 
-                                        className="py-1 px-2 hover:bg-gray-50 rounded cursor-pointer"
-                                        onClick={() => handleSuggestionClick(search)}
-                                    >
-                                        <span className="text-sm text-gray-700">{search}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        {searchTerm.length === 0 &&
+                            popularSearches.length > 0 && (
+                                <div className="border-t border-gray-100 p-3">
+                                    <h3 className="mb-2 flex items-center gap-1 text-sm font-medium text-gray-700">
+                                        <TrendingUp className="h-4 w-4" />
+                                        Popular searches
+                                    </h3>
+                                    {popularSearches
+                                        .slice(0, 6)
+                                        .map((search, index) => (
+                                            <div
+                                                key={index}
+                                                className="cursor-pointer rounded px-2 py-1 hover:bg-gray-50"
+                                                onClick={() =>
+                                                    handleSuggestionClick(
+                                                        search
+                                                    )
+                                                }
+                                            >
+                                                <span className="text-sm text-gray-700">
+                                                    {search}
+                                                </span>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
 
                         {/* Search Suggestions */}
                         {suggestions.length > 0 && (
                             <div className="p-3">
-                                <h3 className="text-sm font-medium text-gray-700 mb-2">Suggestions</h3>
+                                <h3 className="mb-2 text-sm font-medium text-gray-700">
+                                    Suggestions
+                                </h3>
                                 {suggestions.map((suggestion, index) => (
-                                    <div 
-                                        key={index} 
-                                        className="flex items-center justify-between py-1 px-2 hover:bg-gray-50 rounded cursor-pointer"
-                                        onClick={() => handleSuggestionClick(suggestion.text)}
+                                    <div
+                                        key={index}
+                                        className="flex cursor-pointer items-center justify-between rounded px-2 py-1 hover:bg-gray-50"
+                                        onClick={() =>
+                                            handleSuggestionClick(
+                                                suggestion.text
+                                            )
+                                        }
                                     >
-                                        <span className="text-sm text-gray-700">{suggestion.text}</span>
+                                        <span className="text-sm text-gray-700">
+                                            {suggestion.text}
+                                        </span>
                                         <span className="text-xs text-gray-400 capitalize">
                                             {suggestion.type}
                                         </span>
@@ -255,7 +305,7 @@ export default function Navbar() {
 
                         {/* No suggestions */}
                         {searchTerm.length >= 2 && suggestions.length === 0 && (
-                            <div className="p-3 text-sm text-gray-500 text-center">
+                            <div className="p-3 text-center text-sm text-gray-500">
                                 No suggestions found
                             </div>
                         )}
