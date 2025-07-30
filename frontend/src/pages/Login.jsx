@@ -23,11 +23,13 @@ export default function Login() {
 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.')
             setUserMessage({
                 message: 'Please enter a valid email address.',
                 color: 'red-600',
             })
         } else if (password.length < 8) {
+            alert('Password should be at least 8 characters long.')
             setUserMessage({
                 message: 'Password should be at least 8 characters long.',
                 color: 'red-600',
@@ -42,11 +44,13 @@ export default function Login() {
                 axios
                     .post(`${API_URL}/api/login/signup`, data)
                     .then((res) => {
+                        alert(res.data.msg)
                         setUserMessage((prev) => {
                             return { ...prev, message: res.data.msg }
                         })
                     })
                     .catch((error) => {
+                        alert('Error occured!')
                         setUserMessage((prev) => {
                             return { ...prev, message: 'Error occured!' }
                         })
@@ -61,12 +65,14 @@ export default function Login() {
                         if (res.data.success) {
                             navigate('/login/loading-page')
                         } else {
+                            alert(res.data.msg)
                             setUserMessage((prev) => {
                                 return { ...prev, message: res.data.msg }
                             })
                         }
                     })
                     .catch((error) => {
+                        alert('Error occured!')
                         setUserMessage((prev) => {
                             return { ...prev, message: 'Error occured!' }
                         })

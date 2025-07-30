@@ -109,6 +109,7 @@ router.get("/dashboard", authenticate, async (req, res) => {
         const orders = await prisma.order.findMany({
             where: {
                 userId: userId,
+                received: false,
             },
             orderBy: {
                 createdAt: "desc",
@@ -124,22 +125,17 @@ router.get("/dashboard", authenticate, async (req, res) => {
                         price: true,
                         rating: true,
                         imageURL: true,
+                        quantitySold: true,
+                        createdAt: true,
                     },
                 },
             },
         });
 
-        const formattedOrders = orders.map((order) => ({
-            ...order.product,
-            quantity: order.quantity,
-            orderedAt: order.createdAt,
-            orderId: order.id,
-        }));
-
         res.json({
             success: true,
             listings: listings,
-            orders: formattedOrders,
+            orders: orders,
         });
     } catch (error) {
         console.error(error);

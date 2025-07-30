@@ -181,15 +181,10 @@ export default function ProductDetail() {
                         </div>
 
                         <div className="flex flex-wrap gap-4">
-                            {login && (
-                                <button className="cursor-pointer rounded bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 transition-colors">
-                                    Buy Now
-                                </button>
-                            )}
                             {login && !inCart && (
                                 <button
                                     onClick={handleAddToCart}
-                                    className="flex items-center gap-2 cursor-pointer rounded bg-black px-6 py-2 text-white hover:bg-gray-800 transition-colors"
+                                    className="flex cursor-pointer items-center gap-2 rounded bg-black px-6 py-2 text-white transition-colors hover:bg-gray-800"
                                 >
                                     <ShoppingCart className="h-4 w-4" />
                                     Add to Cart
@@ -198,7 +193,7 @@ export default function ProductDetail() {
                             {login && inCart && (
                                 <button
                                     disabled
-                                    className="flex items-center gap-2 cursor-not-allowed rounded bg-green-600 px-6 py-2 text-white"
+                                    className="flex cursor-not-allowed items-center gap-2 rounded bg-green-600 px-6 py-2 text-white"
                                 >
                                     <CheckCircle className="h-4 w-4" />
                                     In Cart
@@ -207,11 +202,13 @@ export default function ProductDetail() {
                         </div>
 
                         {message && (
-                            <div className={`mt-4 p-3 rounded text-sm ${
-                                message.includes('Successfully') 
-                                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                                    : 'bg-red-100 text-red-700 border border-red-200'
-                            }`}>
+                            <div
+                                className={`mt-4 rounded p-3 text-sm ${
+                                    message.includes('Successfully')
+                                        ? 'border border-green-200 bg-green-100 text-green-700'
+                                        : 'border border-red-200 bg-red-100 text-red-700'
+                                }`}
+                            >
                                 {message}
                             </div>
                         )}
@@ -221,17 +218,14 @@ export default function ProductDetail() {
 
             {/* AI-Powered Recommendations Section */}
             <div className="mt-12">
-                <RecommendedProducts 
-                    productId={id} 
+                <RecommendedProducts
+                    productId={id}
                     title="Recommended for You"
                 />
-                
+
                 {/* You might also like section with different algorithm */}
-                <SimilarProducts 
-                    productId={id} 
-                    title="You might also like"
-                />
-                
+                <SimilarProducts productId={id} title="You might also like" />
+
                 {/* Categories for general browsing */}
                 <Category categories={data.categories} />
             </div>

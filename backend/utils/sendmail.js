@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 
-function sendMail(mailReceiver, mailSubject, mailMessage) {
+async function sendMail(mailReceiver, mailSubject, mailMessage) {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         secure: true,
@@ -18,12 +18,12 @@ function sendMail(mailReceiver, mailSubject, mailMessage) {
         text: mailMessage,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(error);
-            return res.status(500).json({ error });
-        }
-    });
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        return info;
+    } catch (error) {
+        throw error;
+    }
 }
 
 module.exports = sendMail;

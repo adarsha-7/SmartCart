@@ -39,7 +39,8 @@ model Product {
   userID          String
   name            String
   price           Float
-  rating          Float
+  rating          Float             @default(0)
+  ratings         Int[]             
   imageURL        String
   createdAt       DateTime         @default(now())
   numberOfRating  Int              @default(0)
@@ -101,4 +102,5 @@ model Order {
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   quantity     Int      @default(1)
   createdAt    DateTime @default(now())
+  received     Boolean @default(false)
 }

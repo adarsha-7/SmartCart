@@ -83,7 +83,7 @@ export default function Cart() {
                                 ))}
                             </div>
                         </div>
-                        <OrderCalculator items={items} />
+                        <OrderCalculator items={items} user={user} />
                     </div>
                 </>
             )}

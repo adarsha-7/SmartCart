@@ -29,16 +29,21 @@ router.post("/signup", async (req, res) => {
 
     if (userInUser) {
         res.json({ msg: "User with this email already exists." });
-    } else if (userInPending) {
+    } else if (userInPending && Date.now() < userInPending.expiresAt) {
         res.json({ msg: "Email is already sent for verification." });
     } else {
         const { nanoid } = await import("nanoid");
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const pendingUser = await prisma.pendingUser.deleteMany({
+            where: { email: email },
+        });
+
         const newPendingUser = await prisma.pendingUser.create({
             data: {
-                email: email,
+                email,
                 passwordHash: hashedPassword,
                 expiresAt: new Date(Date.now() + 2 * 60 * 1000),
                 verificationToken: nanoid(),

@@ -46,6 +46,9 @@ app.use("/api/recommend", recommend);
 const user = require("./routes/user");
 app.use("/api/user", user);
 
+const order = require("./routes/order");
+app.use("/api/order", order);
+
 const run = async () => {
     app.listen(PORT, () => {
         console.log(`Server listening on http://localhost:${PORT}/api`);
