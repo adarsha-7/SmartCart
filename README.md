@@ -1,10 +1,10 @@
 # SmartCart
 
-### SmartCart is a second-hand marketplace platform powered by machine learning for improved product search based on user descriptions.
+### SmartCart is a second-hand marketplace platform powered by data analysis for improved product search based on user descriptions.
 
 ## Features:
 
-#### - Users can input detailed product descriptions, and the platform uses machine learning to match these descriptions with relevant second-hand product listings, improving search accuracy.
+#### - Users can input any sort of product information, and the platform uses a very efficient algorithm which implements data analysis to match these descriptions with relevant second-hand product listings, improving search accuracy.
 
 #### - The platform is built with a user-friendly interface, making it easy for buyers and sellers to navigate and interact with listings.
 
@@ -14,11 +14,9 @@
 
 ### Frontend:
 
-#### - HTML
-
-#### - Tailwind CSS
-
 #### - React
+
+#### - TailwindCSS
 
 ### Backend:
 
@@ -46,6 +44,4 @@
 
 ### Hosting:
 
-#### - Vercel (frontend)
-
-#### - Railway (backend)
+#### - Supabase (database)
