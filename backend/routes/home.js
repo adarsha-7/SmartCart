@@ -23,7 +23,8 @@ router.get("/content", async (req, res) => {
             LIMIT 40
         `.catch(() => []);
 
-        res.json({
+        // 200 OK - Data fetched successfully
+        res.status(200).json({
             categories,
             trendingProducts,
             featuredProducts,
@@ -31,7 +32,8 @@ router.get("/content", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.json({
+        // 500 Internal Server Error - Unexpected error
+        res.status(500).json({
             categories: [],
             trendingProducts: [],
             featuredProducts: [],

@@ -41,7 +41,7 @@ router.patch("/profile", authenticate, async (req, res) => {
             data: updateData,
         });
 
-        res.json({ msg: "success", user: updatedUser });
+        res.status(200).json({ msg: "success", user: updatedUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Update failed" });
@@ -72,7 +72,7 @@ router.patch(
                 data: { image: uploaded },
             });
 
-            res.json({
+            res.status(200).json({
                 msg: "Profile image updated successfully",
                 image: uploaded,
                 user: updatedUser,
@@ -132,7 +132,7 @@ router.get("/dashboard", authenticate, async (req, res) => {
             },
         });
 
-        res.json({
+        res.status(200).json({
             success: true,
             listings: listings,
             orders: orders,

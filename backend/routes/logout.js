@@ -12,11 +12,12 @@ router.post("/", (req, res) => {
     res.cookie("refresh_token", "", {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "Strict",
         expires: new Date(0),
     });
 
-    res.json({ success: true });
+    // 200 OK – cookies cleared successfully
+    res.status(200).json({ success: true });
 });
 
 module.exports = router;

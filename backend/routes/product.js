@@ -43,10 +43,10 @@ router.get("/", async (req, res) => {
             return res.status(404).json({ error: "Product not found" });
         }
 
-        res.json({ product });
+        return res.status(200).json({ product });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -107,7 +107,7 @@ router.get("/with-recommendations", async (req, res) => {
             }
         }
 
-        res.json({
+        return res.status(200).json({
             product,
             recommendations: {
                 items: recommendations,
@@ -117,7 +117,7 @@ router.get("/with-recommendations", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
@@ -151,22 +151,28 @@ router.post("/add-to-cart", authenticate, async (req, res) => {
                 },
             });
         }
-        res.json({ success: true, cartItem });
+        return res.status(200).json({ success: true, cartItem });
     } catch (error) {
         console.error(error);
-        res.json({ success: false, error });
+        return res.status(500).json({ success: false, error });
     }
 });
 
 router.get("/cart-items", async (req, res) => {
     const userID = req.query.userID;
-    const cartItems = await prisma.cartItem.findMany({
-        where: { userId: userID },
-        include: {
-            product: true,
-        },
-    });
-    res.json({ cartItems });
+
+    try {
+        const cartItems = await prisma.cartItem.findMany({
+            where: { userId: userID },
+            include: {
+                product: true,
+            },
+        });
+        return res.status(200).json({ cartItems });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 router.patch("/cart-item/increase", async (req, res) => {
@@ -175,17 +181,17 @@ router.patch("/cart-item/increase", async (req, res) => {
 
     try {
         const updatedItem = await prisma.cartItem.update({
-            where: { userId: userID, id: itemID },
+            where: { id: itemID },
             data: {
                 quantity: {
                     increment: 1,
                 },
             },
         });
-        res.json({ success: true, cartItem: updatedItem });
+        return res.status(200).json({ success: true, cartItem: updatedItem });
     } catch (error) {
         console.error(error);
-        res.json({ success: false, error });
+        return res.status(500).json({ success: false, error });
     }
 });
 
@@ -195,17 +201,17 @@ router.patch("/cart-item/decrease", async (req, res) => {
 
     try {
         const updatedItem = await prisma.cartItem.update({
-            where: { userId: userID, id: itemID },
+            where: { id: itemID },
             data: {
                 quantity: {
                     decrement: 1,
                 },
             },
         });
-        res.json({ success: true, cartItem: updatedItem });
+        return res.status(200).json({ success: true, cartItem: updatedItem });
     } catch (error) {
         console.error(error);
-        res.json({ success: false, error });
+        return res.status(500).json({ success: false, error });
     }
 });
 
@@ -215,12 +221,12 @@ router.delete("/cart-item/delete", async (req, res) => {
 
     try {
         await prisma.cartItem.delete({
-            where: { userId: userID, id: itemID },
+            where: { id: itemID },
         });
-        res.json({ success: true });
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.error(error);
-        res.json({ success: false, error });
+        return res.status(500).json({ success: false, error });
     }
 });
 
@@ -267,7 +273,7 @@ router.post(
 
             console.log(newProduct);
 
-            return res.status(200).json({
+            return res.status(201).json({
                 success: true,
                 msg: "Product uploaded",
                 productId: newProduct.id,
@@ -301,14 +307,14 @@ router.get("/:productId/similar", async (req, res) => {
             0.05
         );
 
-        res.json({
+        return res.status(200).json({
             productId: parseInt(productId),
             similarProducts: recommendations,
             total: recommendations.length,
         });
     } catch (error) {
         console.error("Similar products error:", error);
-        res.status(500).json({
+        return res.status(500).json({
             error: "Failed to fetch similar products",
             similarProducts: [],
         });
@@ -341,13 +347,13 @@ router.patch("/edit-price", authenticate, async (req, res) => {
             data: { price },
         });
 
-        res.json({
+        return res.status(200).json({
             msg: "Price updated successfully",
             product: updatedProduct,
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to update price" });
+        return res.status(500).json({ error: "Failed to update price" });
     }
 });
 
@@ -369,10 +375,10 @@ router.delete("/delete", authenticate, async (req, res) => {
 
         await prisma.product.delete({ where: { id } });
 
-        res.json({ msg: "Product deleted successfully" });
+        return res.status(200).json({ msg: "Product deleted successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to delete product" });
+        return res.status(500).json({ error: "Failed to delete product" });
     }
 });
 

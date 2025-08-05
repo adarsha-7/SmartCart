@@ -1,7 +1,5 @@
 const express = require("express");
-
 const { PrismaClient } = require("../generated/prisma");
-
 const authenticate = require("../middleware/authenticate");
 const sendMail = require("../utils/sendmail");
 
@@ -17,7 +15,6 @@ router.post("/", authenticate, async (req, res) => {
             return res.status(400).json({ msg: "Invalid request" });
         }
 
-        // Create orders
         const orderData = items.map((item) => ({
             userId: user.id,
             productId: item.productId,
@@ -28,7 +25,6 @@ router.post("/", authenticate, async (req, res) => {
             data: orderData,
         });
 
-        // Delete cart items
         await prisma.cartItem.deleteMany({
             where: {
                 id: { in: items.map((item) => item.id) },
@@ -37,7 +33,7 @@ router.post("/", authenticate, async (req, res) => {
 
         res.status(201).json({
             success: true,
-            msg: "Order(s) placed successfully",
+            msg: "Your order confirmation has been received. Please check your email for more information.",
             count: createdOrders.count,
         });
 
@@ -62,7 +58,7 @@ ${items
 Please keep checking your email for updates.
 
 Thank you for shopping with StudyHub!
-                `;
+        `;
 
         sendMail(user.email, "Order Placed Successfully ✅", buyerMailMessage);
 
@@ -85,7 +81,7 @@ An order has been placed for your product:
 • Buyer Address: ${buyer.address}
 
 Please process this order and prepare it for delivery.
-                        `;
+                `;
 
                 sendMail(
                     seller.email,
@@ -105,24 +101,23 @@ router.patch("/confirmation", authenticate, async (req, res) => {
     const { orderId, rating } = req.body;
 
     try {
-        // 1. Fetch the order and ensure it belongs to the authenticated user
         const order = await prisma.order.findUnique({
             where: { id: orderId },
         });
 
-        if (!order || order.userId !== user.id) {
-            return res
-                .status(404)
-                .json({ msg: "Order not found or unauthorized" });
+        if (!order) {
+            return res.status(404).json({ msg: "Order not found" });
         }
 
-        // 2. Mark the order as received
+        if (order.userId !== user.id) {
+            return res.status(403).json({ msg: "Unauthorized access" });
+        }
+
         await prisma.order.update({
             where: { id: orderId },
             data: { received: true },
         });
 
-        // 3. Fetch the associated product
         const product = await prisma.product.findUnique({
             where: { id: order.productId },
         });
@@ -131,7 +126,6 @@ router.patch("/confirmation", authenticate, async (req, res) => {
             return res.status(404).json({ msg: "Product not found" });
         }
 
-        // 4. Prepare updated fields
         const updatedRatings = [...product.ratings, parseInt(rating)];
         const newNumberOfRating = product.numberOfRating + 1;
         const newQuantitySold = product.quantitySold + order.quantity;
@@ -143,7 +137,6 @@ router.patch("/confirmation", authenticate, async (req, res) => {
                     10
             ) / 10;
 
-        // 5. Update the product
         await prisma.product.update({
             where: { id: product.id },
             data: {
@@ -154,8 +147,8 @@ router.patch("/confirmation", authenticate, async (req, res) => {
             },
         });
 
-        return res.json({
-            msg: "Your order confirmation has been received. Please check your email for more information.",
+        return res.status(200).json({
+            msg: "Your order confirmation has been received. Thank you for shopping with us.",
         });
     } catch (err) {
         console.error(err);

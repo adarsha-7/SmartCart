@@ -14,7 +14,12 @@ function authenticate(req, res, next) {
             next();
         } catch (err) {
             console.error(err);
-            res.json({ success: false, msg: "Error occured", error: err.name });
+            // 401 Unauthorized for invalid access token
+            res.status(401).json({
+                success: false,
+                msg: "Invalid access token",
+                error: err.name,
+            });
         }
     } else if (!cookies.access_token && cookies.refresh_token) {
         try {
@@ -49,10 +54,19 @@ function authenticate(req, res, next) {
             next();
         } catch (err) {
             console.error(err);
-            res.json({ success: false, msg: "Error occured", error: err.name });
+            // 403 Forbidden for invalid refresh token
+            res.status(403).json({
+                success: false,
+                msg: "Invalid refresh token",
+                error: err.name,
+            });
         }
     } else {
-        res.json({ success: false, msg: "User is not authenticated" });
+        // 401 Unauthorized when no token is provided
+        res.status(401).json({
+            success: false,
+            msg: "User is not authenticated",
+        });
     }
 }
 

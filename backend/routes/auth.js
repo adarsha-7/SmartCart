@@ -84,7 +84,7 @@ passport.use(
 
                 return done(null, user);
             } catch (err) {
-                return done(err, null);
+                return done(err, null); // passport will treat this as 500 internally
             }
         }
     )
@@ -99,7 +99,10 @@ router.get(
 
 router.get(
     "/google/callback",
-    passport.authenticate("google", { session: false }),
+    passport.authenticate("google", {
+        session: false,
+        failureRedirect: `${FRONTEND_URL}/auth-error`,
+    }),
     (req, res) => {
         try {
             const user = req.user;
@@ -108,27 +111,44 @@ router.get(
             res.redirect(`${FRONTEND_URL}/`);
         } catch (err) {
             console.error(err);
-            res.redirect(`${FRONTEND_URL}/auth-error`);
+            // Optional: Set status before redirect
+            res.status(500).redirect(`${FRONTEND_URL}/auth-error`);
         }
     }
 );
 
 router.get("/authentication-test", authenticate, async (req, res) => {
-    const userID = req.access_token_decoded.id;
-    const user = await prisma.user.findUnique({
-        where: { id: userID },
-        include: {
-            _count: {
-                select: { CartItems: true },
+    try {
+        const userID = req.access_token_decoded.id;
+        const user = await prisma.user.findUnique({
+            where: { id: userID },
+            include: {
+                _count: {
+                    select: { CartItems: true },
+                },
             },
-        },
-    });
-    res.json({
-        success: true,
-        msg: "User is authenticated",
-        data: req.access_token_decoded,
-        user,
-    });
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                msg: "User not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            msg: "User is authenticated",
+            data: req.access_token_decoded,
+            user,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            msg: "Server error during authentication test",
+        });
+    }
 });
 
 module.exports = router;
